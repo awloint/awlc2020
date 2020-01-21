@@ -2,14 +2,6 @@ name: CI
 
 on:
   push:
-    branches: 
-      - master
-    branches-ignore: 
-      - production
-  pull_request:
-    branches: 
-      - master
-    branches_ignore:
     branches-ignore: 
       - production
 
