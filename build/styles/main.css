@@ -7,9 +7,43 @@ body {
     overflow-x: hidden;
 }
 
+.container {
+  width: 60%;
+}
+
+@media only screen and (max-width: 1024px) {
+  .container {
+    width: 80%;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .container {
+    width: 80%;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .container {
+    width: 94%;
+  }
+}
+
 #logo {
     border-radius: 50% 50%;
 }
+
+.iti__flag {
+  background-image: url("../images/flags.png");
+}
+
+.iti {
+  width: 100%;
+  /* position: relative; */
+  /* left: 40px; */
+}
+
+.iti__arrow { border: none; }
 
 .boogaloo {
     font-family: 'Boogaloo',
