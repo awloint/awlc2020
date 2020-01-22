@@ -9,6 +9,9 @@
     <!-- Load Favicon -->
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <!-- Load intl-tel-input -->
+    <link rel="stylesheet" href="styles/intlTelInput.min.css">
+    <script src="scripts/intlTelInput.min.js"></script>
     <!-- Load Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css" />
     <!-- Load Bootstrap 4-->
@@ -80,11 +83,9 @@
                             ticket &
                             receipt will be sent here.</small>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md form-group">
-                        <input type="tel" class="form-control" id="phone" name="phone"
-                            placeholder="Your Phone Number e.g. +2348081836149" required />
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Your Phone Number"
+                            required />
                         <div class="invalid-feedback">
                             Please provide a valid phone number.
                         </div>

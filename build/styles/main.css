@@ -33,6 +33,18 @@ body {
     border-radius: 50% 50%;
 }
 
+.iti__flag {
+  background-image: url("../images/flags.png");
+}
+
+.iti {
+  width: 100%;
+  /* position: relative; */
+  /* left: 40px; */
+}
+
+.iti__arrow { border: none; }
+
 .boogaloo {
     font-family: 'Boogaloo',
         cursive;
