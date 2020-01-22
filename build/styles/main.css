@@ -7,6 +7,28 @@ body {
     overflow-x: hidden;
 }
 
+.container {
+  width: 60%;
+}
+
+@media only screen and (max-width: 1024px) {
+  .container {
+    width: 80%;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .container {
+    width: 80%;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .container {
+    width: 94%;
+  }
+}
+
 #logo {
     border-radius: 50% 50%;
 }
