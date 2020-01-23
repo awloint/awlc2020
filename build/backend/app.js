@@ -1,10 +1,10 @@
-const PORT = process.env.PORT || 3000
+const port =  3000
 const hostname = '127.0.0.1'
 const http = require('http')
 const app = require('./routes/app')
 
 const server = http.createServer(app)
 
-server.listen(PORT, hostname, () => {
+server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`)
 })
