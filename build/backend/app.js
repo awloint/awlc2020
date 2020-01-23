@@ -1,4 +1,4 @@
-const port =  3000
+const port =  process.env.PORT || 3000
 const hostname = '127.0.0.1'
 const http = require('http')
 const app = require('./routes/app')

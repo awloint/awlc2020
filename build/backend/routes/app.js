@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   console.log('server started successfully')
   next()
 })
-app.get('/', (req, res) => {
+app.get('/awlc/awlc2020/backend', (req, res) => {
   res.send('Working on the server')
 })
 
