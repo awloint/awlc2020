@@ -1,6 +1,8 @@
+const config = require('./config.js')
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
+const indexRouter = express.Router();
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -22,12 +24,16 @@ app.use((req, res, next) => {
   console.log('server started successfully')
   next()
 })
-app.get('/awlc/awlc2020/backend', (req, res) => {
-  res.send('Working on the server')
+indexRouter.get('/', (req, res) => {
+    res.send('Working on the server')
+    console.log(req.params)
 })
 
-app.get('/okay', (req, res) => {
+
+indexRouter.get('/okay', (req, res) => {
   res.send('yeah!! server working')
 })
+
+app.use(config.baseUrl, indexRouter)
 
 module.exports = app
