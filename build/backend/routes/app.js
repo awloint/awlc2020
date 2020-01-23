@@ -16,5 +16,8 @@ app.use((req, res, next) => {
     console.log('server started successfully');
     next();
 })
+app.get('/', (req, res) => {
+  res.send('Working on the server');
+})
 
 module.exports = app;
