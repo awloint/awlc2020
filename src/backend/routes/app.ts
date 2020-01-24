@@ -1,4 +1,4 @@
-const config = require('../../../build/backend/routes/config.js')
+const config = require('./config')
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
