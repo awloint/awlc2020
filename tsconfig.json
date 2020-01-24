@@ -68,9 +68,7 @@
     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
   },
   "include": [
-      "src/**/*.ts",
-      "src/scripts/particles.js",
-      "src/scripts/utils.js"
+      "src/**/*.ts"
   ],
   "exclude": [
       "test/**/*.spec.ts"
