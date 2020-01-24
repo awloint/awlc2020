@@ -1,0 +1,43 @@
+{
+  "name": "awlc2020-registration",
+  "version": "1.0.0",
+  "description": "Registration system for AWLC2020",
+  "main": "build/backend/app.js",
+  "scripts": {
+    "copy": "cp package.json build/backend/",
+    "build": "npm run copy && tsc",
+    "start": "node build/backend/app.js",
+    "dev": "nodemon --exec ts-nod src/main.ts --watch src",
+    "test": "jest --watch",
+    "coverage": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awloint/awlc2020.git"
+  },
+  "keywords": [
+    "awlc2020",
+    "awlc",
+    "awloint"
+  ],
+  "author": "Benson Imoh,ST",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/awloint/awlc2020/issues"
+  },
+  "homepage": "https://github.com/awloint/awlc2020#readme",
+  "devDependencies": {
+    "@types/jest": "^24.9.1",
+    "@types/node": "^13.5.0",
+    "jest": "^25.1.0",
+    "nodemon": "^2.0.2",
+    "ts-jest": "^25.0.0",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "http": "0.0.0"
+  }
+}
