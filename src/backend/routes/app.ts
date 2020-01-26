@@ -1,6 +1,6 @@
-const config = require('./config')
-const express = require('express')
-const bodyParser = require('body-parser')
+import config from './config';
+import express from 'express';
+import bodyParser from 'body-parser';
 const app = express()
 const indexRouter = express.Router();
 
@@ -44,4 +44,4 @@ indexRouter.get("/work", (req: any, res: any) => {
 
 app.use(config.baseUrl, indexRouter)
 
-module.exports = app
+export {app}
