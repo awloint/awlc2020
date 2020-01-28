@@ -1,11 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_1 = __importDefault(require("./config"));
-const express_1 = __importDefault(require("express"));
-const body_parser_1 = __importDefault(require("body-parser"));
+const tslib_1 = require("tslib");
+const config_1 = tslib_1.__importDefault(require("./config"));
+const express_1 = tslib_1.__importDefault(require("express"));
+const body_parser_1 = tslib_1.__importDefault(require("body-parser"));
 const app = express_1.default();
 exports.app = app;
 const indexRouter = express_1.default.Router();
