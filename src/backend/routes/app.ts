@@ -25,22 +25,17 @@ app.use((req: any, res: any, next: any) => {
   next();
 });
 
+//get routes
 indexRouter.get("/", (req: any, res: any) => {
   res.send("Working on the server");
 });
 
 
-indexRouter.get("/okay", (req: any, res: any) => {
-  res.send("yeah!! server working");
-});
-
-indexRouter.get("/chiamaka", (req: any, res: any) => {
-  res.send("Chiamaka is an awesome lady");
-});
-
-indexRouter.get("/work", (req: any, res: any) => {
-  res.send("Work is great!");
-});
+//post routes
+indexRouter.post('register', (req:any, res: any) => {
+  console.log(req.body);
+  
+})
 
 app.use(config.baseUrl, indexRouter)
 
