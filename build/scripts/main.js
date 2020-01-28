@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             const formdata = new FormData(form);
             formdata.append("referrer", referrer);
             // initiate a fetch call
-            //   fetch("localhost:3000/", {
+            //   fetch("scripts/paynow.php", {
             //     method: "post",
             //     body: formdata
             //   })
