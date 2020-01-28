@@ -21,16 +21,12 @@ app.use((req, res, next) => {
     console.log("server started successfully");
     next();
 });
+//get routes
 indexRouter.get("/", (req, res) => {
     res.send("Working on the server");
 });
-indexRouter.get("/okay", (req, res) => {
-    res.send("yeah!! server working");
-});
-indexRouter.get("/chiamaka", (req, res) => {
-    res.send("Chiamaka is an awesome lady");
-});
-indexRouter.get("/work", (req, res) => {
-    res.send("Work is great!");
+//post routes
+indexRouter.post('register', (req, res) => {
+    console.log(req.body);
 });
 app.use(config_1.default.baseUrl, indexRouter);
