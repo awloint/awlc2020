@@ -28,21 +28,27 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
   yearContent.innerHTML = year;
 
   // Change the typed value of the first letter to uppercase for input fields and lowercase for email fields
+  //@ts-ignore
   document.querySelector("#firstName")!.onchange = (e:any) => {
+      //@ts-ignore
     let val:any = document.querySelector("#firstName")!.value;
     const regexp: RegExp = /\b[a-z]/g;
 
     val = val.charAt(0).toUpperCase() + val.substr(1);
   };
 
+  //@ts-ignore
   document.querySelector("#lastName")!.onchange = (e:any) => {
+      //@ts-ignore
     let val:any = document.querySelector("#lastName")!.value;
     const regexp: RegExp = /\b[a-z]/g;
 
     val = val.charAt(0).toUpperCase() + val.substr(1);
   };
 
+  //@ts-ignore
   document.querySelector("#email")!.onchange = (e:any) => {
+      //@ts-ignore
     let val:any = document.querySelector("#email")!.value;
     const regexp: RegExp = /\b[a-z]/g;
 
