@@ -1,6 +1,7 @@
 import config from './config';
 import express from 'express';
 import bodyParser from 'body-parser';
+import formidable from 'express-formidable';
 const app = express()
 const indexRouter = express.Router();
 
@@ -19,6 +20,7 @@ app.use((req:any, res:any, next:any) => {
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(formidable())
 
 app.use((req: any, res: any, next: any) => {
   console.log("server started successfully");
@@ -32,9 +34,10 @@ indexRouter.get("/", (req: any, res: any) => {
 
 
 //post routes
-indexRouter.post('register', (req:any, res: any) => {
-  console.log(req.body);
-  
+indexRouter.post('/register', (req:any, res: any, next: any) => {
+  console.log(req.fields);
+  res.send(JSON.stringify(req.fields))
+
 })
 
 app.use(config.baseUrl, indexRouter)
