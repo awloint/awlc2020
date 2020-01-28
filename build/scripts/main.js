@@ -72,31 +72,31 @@ document.addEventListener("DOMContentLoaded", (e) => {
             const formdata = new FormData(form);
             formdata.append("referrer", referrer);
             // initiate a fetch call
-            //   fetch("scripts/paynow.php", {
-            //     method: "post",
-            //     body: formdata
-            //   })
-            //     .then(response => {
-            //       return response.json();
-            //     })
-            //     .then(data => {
-            //       // console.log(data)
-            //       if (data === "user_exists") {
-            //         swal(
-            //           "Already Registered",
-            //           "You have already registered for the conference.",
-            //           "warning"
-            //         );
-            //         setTimeout(() => {
-            //           window.location = "https://awlo.org/awlc/inviteafriend";
-            //         }, 3000);
-            //       } else {
-            //         window.location.href = data;
-            //       }
-            //     })
-            //     .catch(error => {
-            //       console.log("The Request Failed", error);
-            //     });
+            fetch("http://localhost:3000/register", {
+                method: "post",
+                body: formdata
+            })
+                .then(response => {
+                return response.json();
+            })
+                .then(data => {
+                console.log(data);
+                //@ts-ignore
+                if (data === "user_exists") {
+                    //@ts-ignore
+                    swal("Already Registered", "You have already registered for the conference.", "warning");
+                    setTimeout(() => {
+                        // @ts-ignore
+                        window.location = "https://awlo.org/awlc/inviteafriend";
+                    }, 3000);
+                }
+                else {
+                    // window.location.href = data;
+                }
+            })
+                .catch(error => {
+                console.log("The Request Failed", error);
+            });
         }
     });
 });
