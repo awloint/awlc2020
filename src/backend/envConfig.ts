@@ -1,3 +1,3 @@
-const raveKey = '';
+const raveKey = "";
 
 export { raveKey };

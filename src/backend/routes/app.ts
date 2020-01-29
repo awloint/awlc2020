@@ -5,7 +5,8 @@ import formidable from "express-formidable";
 import { createConnection, getConnection } from "typeorm";
 import { getRepository } from "typeorm";
 import { Delegate } from "../../entity/Delegate";
-import * as envConfig from '../envConfig';
+import * as envConfig from "../envConfig";
+import axios from "axios";
 
 createConnection();
 
@@ -34,7 +35,6 @@ app.use((req: any, res: any, next: any) => {
   next();
 });
 
-
 //get routes
 indexRouter.get("/", (req: any, res: any) => {
   res.send("Working on the server");
@@ -44,41 +44,76 @@ indexRouter.get("/", (req: any, res: any) => {
 indexRouter.post("/register", async (req: any, res: any, next: any) => {
   console.log(req.fields);
   const data = req.fields;
-      let delegate = new Delegate();
-      delegate.firstName = data.firstName;
-      delegate.lastName = data.firstName;
-      delegate.email = data.email;
-      delegate.phone = data.full_phone;
-      delegate.country = data.country;
-      delegate.occupation = data.occupation;
-      delegate.organisation = data.organisation;
-      delegate.member = data.member;
-      delegate.referringChannel = data.referringChannel;
-      delegate.firstConference = data.firstConference;
-      delegate.referrer = data.referrer;
-      let delegateRepository = getConnection().getRepository(Delegate);
-      await delegateRepository.save(delegate);
-      console.log("User has been saved");
+  let delegate = new Delegate();
+  delegate.firstName = data.firstName;
+  delegate.lastName = data.firstName;
+  delegate.email = data.email;
+  delegate.phone = data.full_phone;
+  delegate.country = data.country;
+  delegate.occupation = data.occupation;
+  delegate.organisation = data.organisation;
+  delegate.member = data.member;
+  delegate.referringChannel = data.referringChannel;
+  delegate.firstConference = data.firstConference;
+  delegate.referrer = data.referrer;
+  let delegateRepository = getConnection().getRepository(Delegate);
+  await delegateRepository.save(delegate);
+  console.log("User has been saved");
 
-      let savedUser = await delegateRepository.find();
-      console.log("All Users from the db: ", savedUser);
+  let savedUser = await delegateRepository.find();
+  console.log("All Users from the db: ", savedUser);
+
+  // initialize the payment details
+  const redirectUrl = "https://awlo.org/awlc/awlc2020/backend/verify";
+  let currency: string;
+  let amount: number = 126875;
+  let txref: string = "AWLCSierra2020-" + Math.floor(Math.random() * 68954123) + 123145;
+  if (delegate.country !== "Nigeria") {
+    return (currency = "USD");
+  }
+  if ((currency = "USD")) {
+    return (amount = 350);
+  }
+
+  axios({
+    method: "post",
+    url: "https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/hosted/pay",
+    data: {
+      amount: amount,
+      customer_email: delegate.email,
+      customer_phone: delegate.phone,
+      customer_firstname: delegate.firstName,
+      customer_lastname: delegate.lastName,
+      custom_title: "AWLCSierraLeone2020",
+      custom_logo: "https://awlo.org/wp-content/uploads/2019/01/awlox120.png",
+      custom_description: "African Women in Leadership Conference 2020",
+      currency: currency,
+      txref: txref,
+      PBFPubKey: envConfig.raveKey,
+      redirect_url: redirectUrl
+    }
+  })
+  .then(response => {
+      console.log(response)
+      res.send(response);
+  });
 });
 
 indexRouter.post("/checkuser", async (req: any, res: any, next: any) => {
   //   console.log(req.fields);
-    let delegateRepository = getConnection().getRepository(Delegate);
-    let singleDelegate = await delegateRepository.findOne({
-      email: req.fields.email
-    });
-    console.log("Delegate: ", singleDelegate);
+  let delegateRepository = getConnection().getRepository(Delegate);
+  let singleDelegate = await delegateRepository.findOne({
+    email: req.fields.email
+  });
+  console.log("Delegate: ", singleDelegate);
 
-    if (singleDelegate) {
-      if (singleDelegate.paid === "yes") {
-        res.send(JSON.stringify("user_exists"));
-      }
-    } else {
-      res.send(JSON.stringify("no_user"));
+  if (singleDelegate) {
+    if (singleDelegate.paid === "yes") {
+      res.send(JSON.stringify("user_exists"));
     }
+  } else {
+    res.send(JSON.stringify("no_user"));
+  }
 });
 
 app.use(config.baseUrl, indexRouter);
