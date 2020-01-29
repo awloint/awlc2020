@@ -17,8 +17,8 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const express_formidable_1 = __importDefault(require("express-formidable"));
 const typeorm_1 = require("typeorm");
-const typeorm_2 = require("typeorm");
 const Delegate_1 = require("../../entity/Delegate");
+typeorm_1.createConnection();
 const app = express_1.default();
 exports.app = app;
 const indexRouter = express_1.default.Router();
@@ -40,48 +40,41 @@ indexRouter.get("/", (req, res) => {
     res.send("Working on the server");
 });
 //post routes
-indexRouter.post("/register", (req, res, next) => {
+indexRouter.post("/register", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.fields);
     const data = req.fields;
-    typeorm_1.createConnection( /*...*/)
-        .then((connection) => __awaiter(void 0, void 0, void 0, function* () {
-        let delegate = new Delegate_1.Delegate();
-        delegate.firstName = data.firstName;
-        delegate.lastName = data.firstName;
-        delegate.email = data.email;
-        delegate.phone = data.full_phone;
-        delegate.country = data.country;
-        delegate.occupation = data.occupation;
-        delegate.organisation = data.organisation;
-        delegate.member = data.member;
-        delegate.referringChannel = data.referringChannel;
-        delegate.firstConference = data.firstConference;
-        delegate.referrer = data.referrer;
-        let delegateRepository = connection.getRepository(Delegate_1.Delegate);
-        yield delegateRepository.save(delegate);
-        console.log("User has been saved");
-        let savedUser = yield delegateRepository.find();
-        console.log("All Users from the db: ", savedUser);
-    }))
-        .catch(error => console.log(error));
-    // res.send(JSON.stringify(req.fields))
-});
-indexRouter.post("/checkuser", (req, res, next) => {
+    let delegate = new Delegate_1.Delegate();
+    delegate.firstName = data.firstName;
+    delegate.lastName = data.firstName;
+    delegate.email = data.email;
+    delegate.phone = data.full_phone;
+    delegate.country = data.country;
+    delegate.occupation = data.occupation;
+    delegate.organisation = data.organisation;
+    delegate.member = data.member;
+    delegate.referringChannel = data.referringChannel;
+    delegate.firstConference = data.firstConference;
+    delegate.referrer = data.referrer;
+    let delegateRepository = typeorm_1.getConnection().getRepository(Delegate_1.Delegate);
+    yield delegateRepository.save(delegate);
+    console.log("User has been saved");
+    let savedUser = yield delegateRepository.find();
+    console.log("All Users from the db: ", savedUser);
+}));
+indexRouter.post("/checkuser", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     //   console.log(req.fields);
-    typeorm_1.createConnection( /*...*/).then((connection) => __awaiter(void 0, void 0, void 0, function* () {
-        let delegateRepository = typeorm_2.getRepository(Delegate_1.Delegate);
-        let singleDelegate = yield delegateRepository.findOne({
-            email: req.fields.email
-        });
-        console.log("Delegate: ", singleDelegate);
-        if (singleDelegate) {
-            if (singleDelegate.paid === "yes") {
-                res.send(JSON.stringify("user_exists"));
-            }
+    let delegateRepository = typeorm_1.getConnection().getRepository(Delegate_1.Delegate);
+    let singleDelegate = yield delegateRepository.findOne({
+        email: req.fields.email
+    });
+    console.log("Delegate: ", singleDelegate);
+    if (singleDelegate) {
+        if (singleDelegate.paid === "yes") {
+            res.send(JSON.stringify("user_exists"));
         }
-        else {
-            res.send(JSON.stringify("no_user"));
-        }
-    }));
-});
+    }
+    else {
+        res.send(JSON.stringify("no_user"));
+    }
+}));
 app.use(config_1.default.baseUrl, indexRouter);
