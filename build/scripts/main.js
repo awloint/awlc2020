@@ -45,6 +45,31 @@ document.addEventListener("DOMContentLoaded", (e) => {
         let val = document.querySelector("#email").value;
         const regexp = /\b[a-z]/g;
         val = val.toLowerCase();
+        const emaildata = new FormData;
+        emaildata.append('email', val);
+        // initiate a fetch call
+        fetch("http://localhost:3000/checkuser", {
+            method: "post",
+            body: emaildata
+        })
+            .then(response => {
+            return response.json();
+        })
+            .then(data => {
+            console.log(data);
+            //@ts-ignore
+            if (data === "user_exists") {
+                //@ts-ignore
+                swal("Already Registered", "You have already registered for the conference.", "warning");
+                setTimeout(() => {
+                    // @ts-ignore
+                    window.location = "https://awlo.org/awlc/inviteafriend";
+                }, 3000);
+            }
+        })
+            .catch(err => {
+            console.log(`e don happen ${err}`);
+        });
     };
     const form = document.querySelector("form");
     // On Form Submit
