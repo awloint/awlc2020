@@ -53,21 +53,17 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
     const regexp: RegExp = /\b[a-z]/g;
 
     val = val.toLowerCase();
-console.log(typeof(val));
+
+    const emaildata = new FormData;
+    emaildata.append('email', val)
 
     // initiate a fetch call
     fetch("http://localhost:3000/checkuser", {
       method: "post",
-      headers: {
-        'Content-Type': 'application/json'
-        // 'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      redirect: 'follow', // manual, *follow, error
-      referrerPolicy: 'no-referrer', // no-referrer, *client
-      body: JSON.parse(val) // body data type must match "Content-Type" header
+      body: emaildata
     })
       .then(response => {
-        return response.text();
+        return response.json();
       })
       .then(data => {
         console.log(data)

@@ -17,14 +17,15 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const express_formidable_1 = __importDefault(require("express-formidable"));
 const typeorm_1 = require("typeorm");
+const typeorm_2 = require("typeorm");
 const Delegate_1 = require("../../entity/Delegate");
 const app = express_1.default();
 exports.app = app;
 const indexRouter = express_1.default.Router();
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
     next();
 });
 app.use(body_parser_1.default.urlencoded({ extended: true }));
@@ -39,10 +40,11 @@ indexRouter.get("/", (req, res) => {
     res.send("Working on the server");
 });
 //post routes
-indexRouter.post('/register', (req, res, next) => {
+indexRouter.post("/register", (req, res, next) => {
     console.log(req.fields);
     const data = req.fields;
-    typeorm_1.createConnection( /*...*/).then((connection) => __awaiter(void 0, void 0, void 0, function* () {
+    typeorm_1.createConnection( /*...*/)
+        .then((connection) => __awaiter(void 0, void 0, void 0, function* () {
         let delegate = new Delegate_1.Delegate();
         delegate.firstName = data.firstName;
         delegate.lastName = data.firstName;
@@ -60,12 +62,26 @@ indexRouter.post('/register', (req, res, next) => {
         console.log("User has been saved");
         let savedUser = yield delegateRepository.find();
         console.log("All Users from the db: ", savedUser);
-    })).catch(error => console.log(error));
+    }))
+        .catch(error => console.log(error));
     // res.send(JSON.stringify(req.fields))
 });
-indexRouter.post('/checkuser', (req, res, next) => {
-    console.log(req.body);
-    console.log(req.fields);
-    res.send(JSON.stringify(req.body));
+indexRouter.post("/checkuser", (req, res, next) => {
+    //   console.log(req.fields);
+    typeorm_1.createConnection( /*...*/).then((connection) => __awaiter(void 0, void 0, void 0, function* () {
+        let delegateRepository = typeorm_2.getRepository(Delegate_1.Delegate);
+        let singleDelegate = yield delegateRepository.findOne({
+            email: req.fields.email
+        });
+        console.log("Delegate: ", singleDelegate);
+        if (singleDelegate) {
+            if (singleDelegate.paid === "yes") {
+                res.send(JSON.stringify("user_exists"));
+            }
+        }
+        else {
+            res.send(JSON.stringify("no_user"));
+        }
+    }));
 });
 app.use(config_1.default.baseUrl, indexRouter);
