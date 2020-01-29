@@ -53,6 +53,41 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
     const regexp: RegExp = /\b[a-z]/g;
 
     val = val.toLowerCase();
+console.log(typeof(val));
+
+    // initiate a fetch call
+    fetch("http://localhost:3000/checkuser", {
+      method: "post",
+      headers: {
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      redirect: 'follow', // manual, *follow, error
+      referrerPolicy: 'no-referrer', // no-referrer, *client
+      body: JSON.parse(val) // body data type must match "Content-Type" header
+    })
+      .then(response => {
+        return response.text();
+      })
+      .then(data => {
+        console.log(data)
+        //@ts-ignore
+        if (data === "user_exists") {
+            //@ts-ignore
+          swal(
+            "Already Registered",
+            "You have already registered for the conference.",
+            "warning"
+          );
+          setTimeout(() => {
+              // @ts-ignore
+            window.location = "https://awlo.org/awlc/inviteafriend";
+          }, 3000);
+        }
+      })
+      .catch(err =>{
+        console.log(`e don happen ${err}`);
+      })
   };
 
   const form = document.querySelector("form");
