@@ -56,7 +56,7 @@ indexRouter.post("/register", async (req: any, res: any, next: any) => {
   delegate.referringChannel = data.referringChannel;
   delegate.firstConference = data.firstConference;
   delegate.referrer = data.referrer;
-  let delegateRepository = getConnection().getRepository(Delegate);
+  let delegateRepository = getRepository(Delegate);
   await delegateRepository.save(delegate);
   console.log("User has been saved");
 
@@ -65,38 +65,44 @@ indexRouter.post("/register", async (req: any, res: any, next: any) => {
 
   // initialize the payment details
   const redirectUrl = "https://awlo.org/awlc/awlc2020/backend/verify";
-  let currency: string;
-  let amount: number = 126875;
-  let txref: string = "AWLCSierra2020-" + Math.floor(Math.random() * 68954123) + 123145;
+  var currency: string= "NGN";
+  var amount: number = 126875;
+  let txref: string =
+    "AWLCSierra2020-" + Math.floor(Math.random() * 68954123) + 123145;
   if (delegate.country !== "Nigeria") {
-    return (currency = "USD");
-  }
-  if ((currency = "USD")) {
-    return (amount = 350);
+    currency = "USD";
   }
 
-  axios({
-    method: "post",
-    url: "https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/hosted/pay",
-    data: {
-      amount: amount,
-      customer_email: delegate.email,
-      customer_phone: delegate.phone,
-      customer_firstname: delegate.firstName,
-      customer_lastname: delegate.lastName,
-      custom_title: "AWLCSierraLeone2020",
-      custom_logo: "https://awlo.org/wp-content/uploads/2019/01/awlox120.png",
-      custom_description: "African Women in Leadership Conference 2020",
-      currency: currency,
-      txref: txref,
-      PBFPubKey: envConfig.raveKey,
-      redirect_url: redirectUrl
-    }
-  })
-  .then(response => {
-      console.log(response)
-      res.send(response);
-  });
+  if (currency == "USD") {
+    amount = 350;
+  }
+
+
+  try {
+    await axios({
+      method: "post",
+      url: "https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/hosted/pay",
+      data: {
+        amount: amount,
+        customer_email: delegate.email,
+        customer_phone: delegate.phone,
+        customer_firstname: delegate.firstName,
+        customer_lastname: delegate.lastName,
+        custom_title: "AWLCSierraLeone2020",
+        custom_logo: "https://awlo.org/wp-content/uploads/2019/01/awlox120.png",
+        custom_description: "African Women in Leadership Conference 2020",
+        currency: currency,
+        txref: txref,
+        PBFPubKey: envConfig.raveKey,
+        redirect_url: redirectUrl
+      }
+    }).then(response => {
+    //   console.log(response.data.data.link);
+      res.send(JSON.stringify(response.data.data.link));
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 indexRouter.post("/checkuser", async (req: any, res: any, next: any) => {
@@ -110,6 +116,8 @@ indexRouter.post("/checkuser", async (req: any, res: any, next: any) => {
   if (singleDelegate) {
     if (singleDelegate.paid === "yes") {
       res.send(JSON.stringify("user_exists"));
+    } else {
+        res.send(JSON.stringify("user_exist_but_not_paid"))
     }
   } else {
     res.send(JSON.stringify("no_user"));
