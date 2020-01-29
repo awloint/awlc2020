@@ -2,6 +2,9 @@ import config from './config';
 import express from 'express';
 import bodyParser from 'body-parser';
 import formidable from 'express-formidable';
+import {createConnection} from "typeorm";
+import { Delegate } from '../../entity/Delegate';
+
 const app = express()
 const indexRouter = express.Router();
 
@@ -36,8 +39,37 @@ indexRouter.get("/", (req: any, res: any) => {
 //post routes
 indexRouter.post('/register', (req:any, res: any, next: any) => {
   console.log(req.fields);
-  res.send(JSON.stringify(req.fields))
+  const data = req.fields;
+  createConnection(/*...*/).then(async connection => {
+    let delegate = new Delegate();
+    delegate.firstName = data.firstName;
+    delegate.lastName = data.firstName;
+    delegate.email = data.email;
+    delegate.phone = data.full_phone;
+    delegate.country = data.country;
+    delegate.occupation = data.occupation;
+    delegate.organisation = data.organisation;
+    delegate.member = data.member;
+    delegate.referringChannel = data.referringChannel;
+    delegate.firstConference = data.firstConference;
+    delegate.referrer = data.referrer;
+    let delegateRepository = connection.getRepository(Delegate);
+    await delegateRepository.save(delegate);
+    console.log("User has been saved");
 
+    let savedUser = await delegateRepository.find();
+    console.log("All Users from the db: ", savedUser);
+}).catch(error => console.log(error));
+  // res.send(JSON.stringify(req.fields))
+
+})
+
+indexRouter.post('/checkuser', (req:any, res:any, next:any) => {
+  console.log(req.body);
+  console.log(req.fields);
+  
+  res.send(JSON.stringify(req.body));
+  
 })
 
 app.use(config.baseUrl, indexRouter)
