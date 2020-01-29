@@ -5,6 +5,7 @@ import formidable from "express-formidable";
 import { createConnection } from "typeorm";
 import { getRepository } from "typeorm";
 import { Delegate } from "../../entity/Delegate";
+import * as envConfig from '../envConfig';
 
 const app = express();
 const indexRouter = express.Router();
