@@ -1,4 +1,4 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const raveKey = '';
+const raveKey = "";
 exports.raveKey = raveKey;
