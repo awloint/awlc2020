@@ -2,9 +2,12 @@ import config from "./config";
 import express from "express";
 import bodyParser from "body-parser";
 import formidable from "express-formidable";
-import { createConnection } from "typeorm";
+import { createConnection, getConnection } from "typeorm";
 import { getRepository } from "typeorm";
 import { Delegate } from "../../entity/Delegate";
+import * as envConfig from '../envConfig';
+
+createConnection();
 
 const app = express();
 const indexRouter = express.Router();
@@ -31,17 +34,16 @@ app.use((req: any, res: any, next: any) => {
   next();
 });
 
+
 //get routes
 indexRouter.get("/", (req: any, res: any) => {
   res.send("Working on the server");
 });
 
 //post routes
-indexRouter.post("/register", (req: any, res: any, next: any) => {
+indexRouter.post("/register", async (req: any, res: any, next: any) => {
   console.log(req.fields);
   const data = req.fields;
-  createConnection(/*...*/)
-    .then(async connection => {
       let delegate = new Delegate();
       delegate.firstName = data.firstName;
       delegate.lastName = data.firstName;
@@ -54,21 +56,17 @@ indexRouter.post("/register", (req: any, res: any, next: any) => {
       delegate.referringChannel = data.referringChannel;
       delegate.firstConference = data.firstConference;
       delegate.referrer = data.referrer;
-      let delegateRepository = connection.getRepository(Delegate);
+      let delegateRepository = getConnection().getRepository(Delegate);
       await delegateRepository.save(delegate);
       console.log("User has been saved");
 
       let savedUser = await delegateRepository.find();
       console.log("All Users from the db: ", savedUser);
-    })
-    .catch(error => console.log(error));
-  // res.send(JSON.stringify(req.fields))
 });
 
-indexRouter.post("/checkuser", (req: any, res: any, next: any) => {
+indexRouter.post("/checkuser", async (req: any, res: any, next: any) => {
   //   console.log(req.fields);
-  createConnection(/*...*/).then(async connection => {
-    let delegateRepository = getRepository(Delegate);
+    let delegateRepository = getConnection().getRepository(Delegate);
     let singleDelegate = await delegateRepository.findOne({
       email: req.fields.email
     });
@@ -81,7 +79,6 @@ indexRouter.post("/checkuser", (req: any, res: any, next: any) => {
     } else {
       res.send(JSON.stringify("no_user"));
     }
-  });
 });
 
 app.use(config.baseUrl, indexRouter);
