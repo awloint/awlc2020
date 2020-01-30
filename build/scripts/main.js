@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
                     }, 3000);
                 }
                 else {
-                    // window.location.href = data;
+                    window.location.href = data;
                 }
             })
                 .catch(error => {

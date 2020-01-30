@@ -1,3 +1,5 @@
 node_modules
 coverage
 ormconfig.json
+src/backend/envConfig.ts
+build/backend/envConfig.js

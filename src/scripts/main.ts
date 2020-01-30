@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
               window.location = "https://awlo.org/awlc/inviteafriend";
             }, 3000);
           } else {
-            // window.location.href = data;
+            window.location.href = data;
           }
         })
         .catch(error => {
