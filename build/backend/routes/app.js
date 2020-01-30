@@ -25,7 +25,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const express_formidable_1 = __importDefault(require("express-formidable"));
 const typeorm_1 = require("typeorm");
 const typeorm_2 = require("typeorm");
-const Delegate_1 = require("../../entity/Delegate");
+const Delegate_1 = require("../entity/Delegate");
 const envConfig = __importStar(require("../envConfig"));
 const axios_1 = __importDefault(require("axios"));
 typeorm_1.createConnection();

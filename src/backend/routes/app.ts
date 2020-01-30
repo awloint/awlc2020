@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import formidable from "express-formidable";
 import { createConnection, getConnection } from "typeorm";
 import { getRepository } from "typeorm";
-import { Delegate } from "../../entity/Delegate";
+import { Delegate } from "../entity/Delegate";
 import * as envConfig from "../envConfig"
 import axios from "axios";
 
