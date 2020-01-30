@@ -46,8 +46,30 @@ app.use((req, res, next) => {
     next();
 });
 //get routes
-indexRouter.get("/", (req, res) => {
+indexRouter.get("/ok", (req, res) => {
+    console.log(req.query);
     res.send("Working on the server");
+});
+indexRouter.get('/verify', (req, res, next) => {
+    const { txref } = req.query;
+    console.log(txref);
+    try {
+        axios_1.default({
+            method: "post",
+            url: "https://api.ravepay.com/flwv3-pug/getpaidx/api/v2/verify",
+            data: {
+                txref: txref,
+                SECKEY: envConfig.secretKey
+            }
+        }).then(response => {
+            console.log(response.data);
+            // res.send(JSON.stringify(response.data.data.link));
+        });
+    }
+    catch (error) {
+        console.log(error);
+        next(error);
+    }
 });
 //post routes
 indexRouter.post("/register", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

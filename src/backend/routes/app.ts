@@ -5,7 +5,7 @@ import formidable from "express-formidable";
 import { createConnection, getConnection } from "typeorm";
 import { getRepository } from "typeorm";
 import { Delegate } from "../../entity/Delegate";
-import * as envConfig from "../envConfig";
+import * as envConfig from "../envConfig"
 import axios from "axios";
 
 createConnection();
@@ -36,9 +36,35 @@ app.use((req: any, res: any, next: any) => {
 });
 
 //get routes
-indexRouter.get("/", (req: any, res: any) => {
+indexRouter.get("/ok", (req: any, res: any) => {
+  console.log(req.query);
+  
   res.send("Working on the server");
 });
+
+indexRouter.get('/verify', (req:any, res:any, next:any) => {
+  const {txref} = req.query;
+  console.log(txref);
+  
+  try {
+    axios({
+      method: "post",
+      url: "https://api.ravepay.com/flwv3-pug/getpaidx/api/v2/verify",
+      data: {
+        txref: txref,
+        SECKEY: envConfig.secretKey
+      }
+    }).then(response => {
+      console.log(response.data);
+      // res.send(JSON.stringify(response.data.data.link));
+    });
+  } catch (error) {
+    console.log(error);
+    
+    next(error);
+  }
+})
+
 
 //post routes
 indexRouter.post("/register", async (req: any, res: any, next: any) => {
