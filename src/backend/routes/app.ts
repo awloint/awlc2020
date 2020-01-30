@@ -1,4 +1,4 @@
-import config from "./config";
+import * as config from "./config";
 import express from "express";
 import bodyParser from "body-parser";
 import formidable from "express-formidable";

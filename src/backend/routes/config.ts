@@ -1,4 +1,4 @@
 //config.js
-export = {
-  baseUrl: '/'
-}
+const baseUrl = '/';
+
+export {baseUrl}
