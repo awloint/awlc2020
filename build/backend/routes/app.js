@@ -46,7 +46,7 @@ app.use((req, res, next) => {
     next();
 });
 //get routes
-indexRouter.get("/ok", (req, res) => {
+indexRouter.get("/", (req, res) => {
     console.log(req.query);
     res.send("Working on the server");
 });
@@ -62,8 +62,8 @@ indexRouter.get('/verify', (req, res, next) => {
                 SECKEY: envConfig.secretKey
             }
         }).then(response => {
-            console.log(response.data);
-            // res.send(JSON.stringify(response.data.data.link));
+            console.log(response.data.data);
+            res.json(response.data.data);
         });
     }
     catch (error) {
@@ -77,7 +77,7 @@ indexRouter.post("/register", (req, res, next) => __awaiter(void 0, void 0, void
     const data = req.fields;
     let delegate = new Delegate_1.Delegate();
     delegate.firstName = data.firstName;
-    delegate.lastName = data.firstName;
+    delegate.lastName = data.lastName;
     delegate.email = data.email;
     delegate.phone = data.full_phone;
     delegate.country = data.country;

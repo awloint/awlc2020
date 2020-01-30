@@ -36,16 +36,16 @@ app.use((req: any, res: any, next: any) => {
 });
 
 //get routes
-indexRouter.get("/ok", (req: any, res: any) => {
+indexRouter.get("/", (req: any, res: any) => {
   console.log(req.query);
-  
+
   res.send("Working on the server");
 });
 
 indexRouter.get('/verify', (req:any, res:any, next:any) => {
   const {txref} = req.query;
   console.log(txref);
-  
+
   try {
     axios({
       method: "post",
@@ -55,12 +55,12 @@ indexRouter.get('/verify', (req:any, res:any, next:any) => {
         SECKEY: envConfig.secretKey
       }
     }).then(response => {
-      console.log(response.data);
-      // res.send(JSON.stringify(response.data.data.link));
+      console.log(response.data.data);
+      res.json(response.data.data);
     });
   } catch (error) {
     console.log(error);
-    
+
     next(error);
   }
 })
@@ -72,7 +72,7 @@ indexRouter.post("/register", async (req: any, res: any, next: any) => {
   const data = req.fields;
   let delegate = new Delegate();
   delegate.firstName = data.firstName;
-  delegate.lastName = data.firstName;
+  delegate.lastName = data.lastName;
   delegate.email = data.email;
   delegate.phone = data.full_phone;
   delegate.country = data.country;
