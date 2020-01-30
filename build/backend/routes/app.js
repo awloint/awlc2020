@@ -8,9 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -18,8 +15,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_1 = __importDefault(require("./config"));
+const config = __importStar(require("./config"));
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const express_formidable_1 = __importDefault(require("express-formidable"));
@@ -149,4 +149,4 @@ indexRouter.post("/checkuser", (req, res, next) => __awaiter(void 0, void 0, voi
         res.send(JSON.stringify("no_user"));
     }
 }));
-app.use(config_1.default.baseUrl, indexRouter);
+app.use(config.baseUrl, indexRouter);
