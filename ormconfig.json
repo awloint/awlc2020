@@ -11,14 +11,14 @@
         "build/backend/entity/**/*.js"
     ],
     "migrations": [
-        "src/migration/**/*.ts"
+        "src/backend/migration/**/*.ts"
     ],
     "subscribers": [
-        "src/subscriber/**/*.ts"
+        "src/backend/subscriber/**/*.ts"
     ],
      "cli": {
-         "entitiesDir": "src/entity",
-         "migrationsDir": "src/migration",
-         "subscribersDir": "src/subscriber"
+         "entitiesDir": "src/backend/entity",
+         "migrationsDir": "src/backend/migration",
+         "subscribersDir": "src/backend/subscriber"
      }
 }
