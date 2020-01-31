@@ -86,8 +86,8 @@ indexRouter.post("/register", async (req: any, res: any, next: any) => {
   await delegateRepository.save(delegate);
   console.log("User has been saved");
 
-  let savedUser = await delegateRepository.find();
-  console.log("All Users from the db: ", savedUser);
+  // let savedUser = await delegateRepository.find();
+  // console.log("All Users from the db: ", savedUser);
 
   // initialize the payment details
   const redirectUrl = "https://awlo.org/awlc/awlc2020/backend/verify";

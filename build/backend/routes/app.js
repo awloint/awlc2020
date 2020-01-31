@@ -90,8 +90,8 @@ indexRouter.post("/register", (req, res, next) => __awaiter(void 0, void 0, void
     let delegateRepository = typeorm_2.getRepository(Delegate_1.Delegate);
     yield delegateRepository.save(delegate);
     console.log("User has been saved");
-    let savedUser = yield delegateRepository.find();
-    console.log("All Users from the db: ", savedUser);
+    // let savedUser = await delegateRepository.find();
+    // console.log("All Users from the db: ", savedUser);
     // initialize the payment details
     const redirectUrl = "https://awlo.org/awlc/awlc2020/backend/verify";
     var currency = "NGN";
