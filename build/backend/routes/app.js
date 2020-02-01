@@ -28,6 +28,11 @@ const typeorm_2 = require("typeorm");
 const Delegate_1 = require("../entity/Delegate");
 const envConfig = __importStar(require("../envConfig"));
 const axios_1 = __importDefault(require("axios"));
+// Import Modules
+const cancelledEmail = __importStar(require("../emails/cancelledRegistration"));
+const email_1 = require("../modules/email");
+const sms_1 = require("../modules/sms");
+const newsletter_1 = require("../modules/newsletter");
 typeorm_1.createConnection();
 const app = express_1.default();
 exports.app = app;
@@ -45,12 +50,16 @@ app.use((req, res, next) => {
     console.log("server started successfully");
     next();
 });
+// extra functions
+const name = (firstName, lastName) => {
+    return `${firstName} ${lastName}`;
+};
 //get routes
 indexRouter.get("/", (req, res) => {
     console.log(req.query);
     res.send("Working on the server");
 });
-indexRouter.get('/verify', (req, res, next) => {
+indexRouter.get("/verify", (req, res, next) => {
     const { txref } = req.query;
     console.log(txref);
     try {
@@ -63,12 +72,56 @@ indexRouter.get('/verify', (req, res, next) => {
             }
         }).then(response => {
             console.log(response.data.data);
-            res.json(response.data.data);
+            if (response.data.data.status === "success" &&
+                response.data.data.chargecode == "00") {
+                let delegate = new Delegate_1.Delegate();
+                let delegateRepository = typeorm_2.getRepository(Delegate_1.Delegate);
+                delegate.email = response.data.data.email;
+                delegateRepository.update({ email: delegate.email }, { paid: "yes", paidAt: new Date() });
+                let savedUser = delegateRepository.findOne({ email: delegate.email });
+                console.log(savedUser);
+                //     let sms: SMS = new SMS();
+                //     let savedEmail: Email = new Email();
+                //     sms.send(
+                //       "AWLOInt",
+                //       savedUser.phone,
+                //       `Dear ${name(
+                //         savedUser.firstName,
+                //         savedUser.lastName
+                //       )}, thank you for registering for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. Please check your email for more details.
+                // #AWLCSierraLeone2020.
+                // `
+                //     );
+                //     email.sendWithoutAttachment(
+                //       savedUser.firstName,
+                //       savedUser.lastName,
+                //       savedUser.email,
+                //       "African Women in Leadership Organisation",
+                //       "info@awlo.org",
+                //       "#AWLCSierraLeone2020: Your Registration is not complete",
+                //       cancelledEmail.textBodyCancelled(
+                //         savedUser.firstName,
+                //         savedUser.lastName
+                //       ),
+                //       cancelledEmail.htmlBodyCancelled(
+                //         savedUser.firstName,
+                //         savedUser.lastName
+                //       )
+                //     );
+                //     let newsletter: Newsletter = new Newsletter();
+                //     newsletter.addToList(
+                //     savedUser.firstName,
+                //     savedUser.lastName,
+                //     name(savedUser.firstName, savedUser.lastName),
+                //     savedUser.email,
+                //     savedUser.phone,
+                //     savedUser.country,
+                //     "12024")
+            }
         });
     }
     catch (error) {
         console.log(error);
-        next(error);
     }
 });
 //post routes
@@ -92,6 +145,8 @@ indexRouter.post("/register", (req, res, next) => __awaiter(void 0, void 0, void
     console.log("User has been saved");
     let savedUser = yield delegateRepository.find();
     console.log("All Users from the db: ", savedUser);
+    let newsletter = new newsletter_1.Newsletter();
+    newsletter.addToList(delegate.firstName, delegate.lastName, name(delegate.firstName, delegate.lastName), delegate.email, delegate.phone, delegate.country, "12025");
     // initialize the payment details
     const redirectUrl = "https://awlo.org/awlc/awlc2020/backend/verify";
     var currency = "NGN";
@@ -119,7 +174,21 @@ indexRouter.post("/register", (req, res, next) => __awaiter(void 0, void 0, void
                 currency: currency,
                 txref: txref,
                 PBFPubKey: envConfig.raveKey,
-                redirect_url: redirectUrl
+                onclose: () => {
+                    let sms = new sms_1.SMS();
+                    let email = new email_1.Email();
+                    sms.send("AWLOInt", delegate.phone, `Dear ${name(delegate.firstName, delegate.lastName)}, thank you for taking steps to register for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. To complete your registration, kindly visit https://awlo.org/awlc/awlc2020
+    #AWLCSierraLeone2020.
+    `);
+                    email.sendWithoutAttachment(delegate.firstName, delegate.lastName, delegate.email, "African Women in Leadership Organisation", "info@awlo.org", "#AWLCSierraLeone2020: Your Registration is not complete", cancelledEmail.textBodyCancelled(delegate.firstName, delegate.lastName), cancelledEmail.htmlBodyCancelled(delegate.firstName, delegate.lastName));
+                    res.redirect("https://awlo.org/awlc");
+                },
+                redirect_url: redirectUrl,
+                subaccounts: [
+                    {
+                        id: "RS_D68E8E1087312CB80F3BD77721EEA468"
+                    }
+                ]
             }
         }).then(response => {
             //   console.log(response.data.data.link);
@@ -127,7 +196,7 @@ indexRouter.post("/register", (req, res, next) => __awaiter(void 0, void 0, void
         });
     }
     catch (error) {
-        next(error);
+        console.log(error);
     }
 }));
 indexRouter.post("/checkuser", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
