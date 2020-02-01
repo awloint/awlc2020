@@ -5,8 +5,15 @@ import formidable from "express-formidable";
 import { createConnection, getConnection } from "typeorm";
 import { getRepository } from "typeorm";
 import { Delegate } from "../entity/Delegate";
-import * as envConfig from "../envConfig"
+import * as envConfig from "../envConfig";
 import axios from "axios";
+
+// Import Modules
+import * as cancelledEmail from "../emails/cancelledRegistration";
+import * as successEmail from "../emails/successfulRegistration";
+import { Email } from "../modules/email";
+import { SMS } from "../modules/sms";
+import { Newsletter } from "../modules/newsletter";
 
 createConnection();
 
@@ -35,6 +42,11 @@ app.use((req: any, res: any, next: any) => {
   next();
 });
 
+// extra functions
+const name = (firstName: string, lastName: string): string => {
+  return `${firstName} ${lastName}`;
+};
+
 //get routes
 indexRouter.get("/", (req: any, res: any) => {
   console.log(req.query);
@@ -42,8 +54,8 @@ indexRouter.get("/", (req: any, res: any) => {
   res.send("Working on the server");
 });
 
-indexRouter.get('/verify', (req:any, res:any, next:any) => {
-  const {txref} = req.query;
+indexRouter.get("/verify", (req: any, res: any, next: any) => {
+  const { txref } = req.query;
   console.log(txref);
 
   try {
@@ -56,15 +68,66 @@ indexRouter.get('/verify', (req:any, res:any, next:any) => {
       }
     }).then(response => {
       console.log(response.data.data);
-      res.json(response.data.data);
+      if (
+        response.data.data.status === "success" &&
+        response.data.data.chargecode == "00"
+      ) {
+        let delegate = new Delegate();
+        let delegateRepository = getRepository(Delegate);
+        delegate.email = response.data.data.email;
+        delegateRepository.update(
+          { email: delegate.email },
+          { paid: "yes", paidAt: new Date() }
+        );
+        let savedUser = delegateRepository.findOne({ email: delegate.email });
+        console.log(savedUser);
+
+    //     let sms: SMS = new SMS();
+    //     let savedEmail: Email = new Email();
+
+    //     sms.send(
+    //       "AWLOInt",
+    //       savedUser.phone,
+    //       `Dear ${name(
+    //         savedUser.firstName,
+    //         savedUser.lastName
+    //       )}, thank you for registering for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. Please check your email for more details.
+    // #AWLCSierraLeone2020.
+    // `
+    //     );
+
+    //     email.sendWithoutAttachment(
+    //       savedUser.firstName,
+    //       savedUser.lastName,
+    //       savedUser.email,
+    //       "African Women in Leadership Organisation",
+    //       "info@awlo.org",
+    //       "#AWLCSierraLeone2020: Your Registration is not complete",
+    //       cancelledEmail.textBodyCancelled(
+    //         savedUser.firstName,
+    //         savedUser.lastName
+    //       ),
+    //       cancelledEmail.htmlBodyCancelled(
+    //         savedUser.firstName,
+    //         savedUser.lastName
+    //       )
+    //     );
+
+    //     let newsletter: Newsletter = new Newsletter();
+    //     newsletter.addToList(
+    //     savedUser.firstName,
+    //     savedUser.lastName,
+    //     name(savedUser.firstName, savedUser.lastName),
+    //     savedUser.email,
+    //     savedUser.phone,
+    //     savedUser.country,
+    //     "12024")
+      }
     });
   } catch (error) {
     console.log(error);
-
-    next(error);
   }
-})
-
+});
 
 //post routes
 indexRouter.post("/register", async (req: any, res: any, next: any) => {
@@ -89,9 +152,20 @@ indexRouter.post("/register", async (req: any, res: any, next: any) => {
   let savedUser = await delegateRepository.find();
   console.log("All Users from the db: ", savedUser);
 
+  let newsletter: Newsletter = new Newsletter();
+  newsletter.addToList(
+    delegate.firstName,
+    delegate.lastName,
+    name(delegate.firstName, delegate.lastName),
+    delegate.email,
+    delegate.phone,
+    delegate.country,
+    "12025"
+  );
+
   // initialize the payment details
   const redirectUrl = "https://awlo.org/awlc/awlc2020/backend/verify";
-  var currency: string= "NGN";
+  var currency: string = "NGN";
   var amount: number = 126875;
   let txref: string =
     "AWLCSierra2020-" + Math.floor(Math.random() * 68954123) + 123145;
@@ -102,7 +176,6 @@ indexRouter.post("/register", async (req: any, res: any, next: any) => {
   if (currency == "USD") {
     amount = 350;
   }
-
 
   try {
     await axios({
@@ -120,14 +193,53 @@ indexRouter.post("/register", async (req: any, res: any, next: any) => {
         currency: currency,
         txref: txref,
         PBFPubKey: envConfig.raveKey,
-        redirect_url: redirectUrl
+        onclose: () => {
+          let sms: SMS = new SMS();
+          let email: Email = new Email();
+
+          sms.send(
+            "AWLOInt",
+            delegate.phone,
+            `Dear ${name(
+              delegate.firstName,
+              delegate.lastName
+            )}, thank you for taking steps to register for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. To complete your registration, kindly visit https://awlo.org/awlc/awlc2020
+    #AWLCSierraLeone2020.
+    `
+          );
+
+          email.sendWithoutAttachment(
+            delegate.firstName,
+            delegate.lastName,
+            delegate.email,
+            "African Women in Leadership Organisation",
+            "info@awlo.org",
+            "#AWLCSierraLeone2020: Your Registration is not complete",
+            cancelledEmail.textBodyCancelled(
+              delegate.firstName,
+              delegate.lastName
+            ),
+            cancelledEmail.htmlBodyCancelled(
+              delegate.firstName,
+              delegate.lastName
+            )
+          );
+
+          res.redirect("https://awlo.org/awlc");
+        },
+        redirect_url: redirectUrl,
+        subaccounts: [
+          {
+            id: "RS_D68E8E1087312CB80F3BD77721EEA468"
+          }
+        ]
       }
     }).then(response => {
-    //   console.log(response.data.data.link);
+      //   console.log(response.data.data.link);
       res.send(JSON.stringify(response.data.data.link));
     });
   } catch (error) {
-    next(error);
+    console.log(error);
   }
 });
 
@@ -143,7 +255,7 @@ indexRouter.post("/checkuser", async (req: any, res: any, next: any) => {
     if (singleDelegate.paid === "yes") {
       res.send(JSON.stringify("user_exists"));
     } else {
-        res.send(JSON.stringify("user_exist_but_not_paid"))
+      res.send(JSON.stringify("user_exist_but_not_paid"));
     }
   } else {
     res.send(JSON.stringify("no_user"));
