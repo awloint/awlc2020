@@ -112,7 +112,7 @@ indexRouter.get("/verify", async (req: any, res: any) => {
           res.redirect("https://awlo.org/awlc");
 
         //send sms
-        sendSmsEmail.email_sms(delegate);
+        sendSmsEmail.email_sms(delegate, "verified");
         }
       }).catch(err => {
         console.log(`no mention dis gbege - ${err}`);
@@ -143,8 +143,8 @@ indexRouter.post("/register", async (req: any, res: any) => {
   await delegateRepository.save(delegate);
   console.log("User has been saved");
 
-  // let savedUser = await delegateRepository.find();
-  // console.log("All Users from the db: ", savedUser);
+  const sendSmsEmail: SendSmsEmail = new SendSmsEmail();//send sms
+  sendSmsEmail.email_sms(delegate, "not_verified");
 
   try {
     const payment: Payment = new Payment();

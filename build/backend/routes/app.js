@@ -97,7 +97,7 @@ indexRouter.get("/verify", (req, res) => __awaiter(void 0, void 0, void 0, funct
                 console.log(savedUser);
                 res.redirect("https://awlo.org/awlc");
                 //send sms
-                sendSmsEmail.email_sms(delegate);
+                sendSmsEmail.email_sms(delegate, "verified");
             }
         })).catch(err => {
             console.log(`no mention dis gbege - ${err}`);
@@ -126,8 +126,8 @@ indexRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, fu
     let delegateRepository = typeorm_2.getRepository(Delegate_1.Delegate);
     yield delegateRepository.save(delegate);
     console.log("User has been saved");
-    // let savedUser = await delegateRepository.find();
-    // console.log("All Users from the db: ", savedUser);
+    const sendSmsEmail = new send_sms_email_1.SendSmsEmail(); //send sms
+    sendSmsEmail.email_sms(delegate, "not_verified");
     try {
         const payment = new payment_1.Payment();
         yield payment

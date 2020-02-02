@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     form.addEventListener("submit", e => {
         let forms = document.getElementsByClassName("needs-validation");
         // Check to see if form has validation errors
-        let validation = Array.prototype.filter.call(forms, form => {
+        let validation = Array.prototype.filter.call(forms, (form) => {
             if (form.checkValidity() === false) {
                 e.preventDefault();
                 e.stopPropagation();
