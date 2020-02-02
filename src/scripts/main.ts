@@ -69,16 +69,18 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
         console.log(data)
         //@ts-ignore
         if (data === "user_exists") {
-            //@ts-ignore
+          //@ts-ignore
           swal(
             "Already Registered",
             "You have already registered for the conference.",
             "warning"
           );
           setTimeout(() => {
-              // @ts-ignore
+            // @ts-ignore
             window.location = "https://awlo.org/awlc/inviteafriend";
           }, 3000);
+        } else {
+          window.location.href = data;
         }
       })
       .catch(err =>{
@@ -141,8 +143,10 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
                 // @ts-ignore
               window.location = "https://awlo.org/awlc/inviteafriend";
             }, 3000);
+          } else if (data === "no_user") {
+             console.log(data);
           } else {
-            window.location.href = data;
+              window.location.href = data;
           }
         })
         .catch(error => {

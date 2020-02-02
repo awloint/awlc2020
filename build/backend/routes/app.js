@@ -35,6 +35,7 @@ const successEmail = __importStar(require("../emails/successfulRegistration"));
 const email_1 = require("../modules/email");
 const sms_1 = require("../modules/sms");
 const newsletter_1 = require("../modules/newsletter");
+const payment_1 = require("../modules/payment");
 typeorm_1.createConnection();
 const app = express_1.default();
 exports.app = app;
@@ -62,7 +63,7 @@ indexRouter.get("/", (req, res) => {
     console.log(req.query);
     res.send("Working on the server");
 });
-indexRouter.get('/verify', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+indexRouter.get("/verify", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const queryparam = yield JSON.parse(req.query.resp);
     const { data } = queryparam;
     const { txRef } = data.tx;
@@ -74,25 +75,29 @@ indexRouter.get('/verify', (req, res) => __awaiter(void 0, void 0, void 0, funct
     console.log(queryparam);
     //   console.log(data.tx)
     try {
-        yield axios_1.default.post(`https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/verify?txref=${txRef}`, {
+        yield axios_1.default
+            .post(`https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/verify?txref=${txRef}`, {
             txref: txRef,
             SECKEY: envConfig.secretKey
         }, {
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json"
             }
-        }).then((response) => __awaiter(void 0, void 0, void 0, function* () {
+        })
+            .then((response) => __awaiter(void 0, void 0, void 0, function* () {
             console.log(response.data.data);
             if (response.data.data.status === "successful" &&
                 response.data.data.chargecode == "00") {
-                console.log('wow wow');
+                console.log("wow wow");
                 let delegate = new Delegate_1.Delegate();
                 let delegateRepository = typeorm_2.getRepository(Delegate_1.Delegate);
                 delegate.email = response.data.data.custemail;
                 // console.log(delegate);
                 yield delegateRepository.update({ email: delegate.email }, { paid: "yes", paidAt: new Date() });
                 // console.log(delegateRepository);
-                let savedUser = yield delegateRepository.findOne({ email: delegate.email });
+                let savedUser = yield delegateRepository.findOne({
+                    email: delegate.email
+                });
                 console.log(savedUser);
                 res.redirect("https://awlo.org/awlc");
                 let sms = new sms_1.SMS();
@@ -133,6 +138,12 @@ indexRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, fu
     // console.log("All Users from the db: ", savedUser);
     let newsletter = new newsletter_1.Newsletter();
     newsletter.addToList(delegate.firstName, delegate.lastName, name(delegate.firstName, delegate.lastName), delegate.email, delegate.phone, delegate.country, "12025");
+    let sms = new sms_1.SMS();
+    let email = new email_1.Email();
+    sms.send("AWLOInt", delegate.phone, `Dear ${name(delegate.firstName, delegate.lastName)}, thank you for taking steps to register for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. To complete your registration, kindly visit https://awlo.org/awlc/awlc2020
+    #AWLCSierraLeone2020.
+    `);
+    email.sendWithoutAttachment(delegate.firstName, delegate.lastName, delegate.email, "African Women in Leadership Organisation", "info@awlo.org", "#AWLCSierraLeone2020: Your Registration is not complete", cancelledEmail.textBodyCancelled(delegate.firstName, delegate.lastName), cancelledEmail.htmlBodyCancelled(delegate.firstName, delegate.lastName));
     // initialize the payment details
     const redirectUrl = "http://localhost:3000/verify";
     var currency = "NGN";
@@ -145,38 +156,10 @@ indexRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, fu
         amount = 350;
     }
     try {
-        yield axios_1.default({
-            method: "post",
-            url: "https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/hosted/pay",
-            data: {
-                amount: amount,
-                customer_email: delegate.email,
-                customer_phone: delegate.phone,
-                customer_firstname: delegate.firstName,
-                customer_lastname: delegate.lastName,
-                custom_title: "AWLCSierraLeone2020",
-                custom_logo: "https://awlo.org/wp-content/uploads/2019/01/awlox120.png",
-                custom_description: "African Women in Leadership Conference 2020",
-                currency: currency,
-                txref: txref,
-                PBFPubKey: envConfig.raveKey,
-                onclose: () => {
-                    let sms = new sms_1.SMS();
-                    let email = new email_1.Email();
-                    sms.send("AWLOInt", delegate.phone, `Dear ${name(delegate.firstName, delegate.lastName)}, thank you for taking steps to register for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. To complete your registration, kindly visit https://awlo.org/awlc/awlc2020
-    #AWLCSierraLeone2020.
-    `);
-                    email.sendWithoutAttachment(delegate.firstName, delegate.lastName, delegate.email, "African Women in Leadership Organisation", "info@awlo.org", "#AWLCSierraLeone2020: Your Registration is not complete", cancelledEmail.textBodyCancelled(delegate.firstName, delegate.lastName), cancelledEmail.htmlBodyCancelled(delegate.firstName, delegate.lastName));
-                    res.redirect("https://awlo.org/awlc");
-                },
-                redirect_url: redirectUrl,
-                subaccounts: [
-                    {
-                        id: "RS_D68E8E1087312CB80F3BD77721EEA468"
-                    }
-                ]
-            }
-        }).then(response => {
+        const payment = new payment_1.Payment();
+        yield payment
+            .start(delegate, 126875, "NGN")
+            .then(response => {
             console.log(response.data.data.link);
             res.json(response.data.data.link);
         })
@@ -196,15 +179,32 @@ indexRouter.post("/checkuser", (req, res, next) => __awaiter(void 0, void 0, voi
     });
     console.log("Delegate: ", singleDelegate);
     if (singleDelegate) {
+        console.log(singleDelegate);
         if (singleDelegate.paid === "yes") {
             res.send(JSON.stringify("user_exists"));
         }
         else {
-            res.send(JSON.stringify("user_exist_but_not_paid"));
+            try {
+                const payment = new payment_1.Payment();
+                yield payment
+                    .start(singleDelegate, 126875, "NGN")
+                    .then(response => {
+                    console.log(response.data.data.link);
+                    res.json(response.data.data.link);
+                })
+                    .catch(err => {
+                    console.log(`hahahah wetin you think for this ${err}`);
+                });
+            }
+            catch (error) {
+                console.log(`nah for catch block ooo -> ${error}`);
+            }
+            //   res.send(JSON.stringify("user_exist_but_not_paid"));
         }
     }
     else {
         res.send(JSON.stringify("no_user"));
+        console.log(singleDelegate);
     }
 }));
 app.use(config.baseUrl, indexRouter);
