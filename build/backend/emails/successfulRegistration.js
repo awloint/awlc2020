@@ -22,7 +22,7 @@ const htmlBodySuccess = (firstName, lastName) => {
         <p>Please constantly visit <a href="https://awlo.org/awlc">www.awlo.org/awlc</a>, to stay updated as we countdown to AWLC Sierra Leone 2020.</p>
         <p>Please note that conference fee only covers full access to the conference and meals at the conference.</p>
         <p>Conference Fees are non-refundable, Delegates who miss the conference after registration are given a waiver on the following year's conference fee.</p>
-        <p>For enquiries and support, reach us by mail via <a href="mailto:info@awlo.org">info@awlo.org</a> or <a href="tel:+234022473972">+234022473972</a>. Also, follow <strong>#AWLCSierraLeone2020</strong> and <strong>@awloint</strong> for updates across all social media.</p>
+        <p>For enquiries and support, reach us by mail via <a href="mailto:info@awlo.org">info@awlo.org</a> or <a href="tel:+2348022473972">+2348022473972</a>. Also, follow <strong>#AWLCSierraLeone2020</strong> and <strong>@awloint</strong> for updates across all social media.</p>
         <p>See you in Sierra Leone!</p>
         </td>
         </tr>
@@ -60,7 +60,7 @@ const textBodySuccess = (firstName, lastName) => {
             Please check in with www.awlo.org/awlc, to stay updated as we countdown to AWLC Sierra Leone 2020.
             Please note that conference fee only covers full access to the conference and meals at the conference.
             Conference Fees are non-refundable, Delegates who miss the conference after registration are given a waiver on the following year's conference fee.
-            For enquiries and support, reach us via info@awlo.org or +234022473972. Also, follow #AWLCSierraLeone2020 and @awloint for updates across social media.
+            For enquiries and support, reach us via info@awlo.org or +2348022473972. Also, follow #AWLCSierraLeone2020 and @awloint for updates across social media.
             See you in Sierra Leone.`;
 };
 exports.textBodySuccess = textBodySuccess;

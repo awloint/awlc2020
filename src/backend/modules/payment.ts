@@ -33,14 +33,14 @@ class Payment {
         currency: currency,
         txref: txref,
         PBFPubKey: envConfig.raveKey,
-        redirect_url: "http://localhost:3000/verify",
+        redirect_url: "https://awlo.org/awlc/awlc2020/backend/verify",
         subaccounts: [
           {
             id: "RS_D68E8E1087312CB80F3BD77721EEA468"
           }
         ]
       }
-    })
+    });
   }
 }
 

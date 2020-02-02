@@ -63,8 +63,8 @@ indexRouter.get("/verify", async (req: any, res: any) => {
   // console.log(queryparam);
   const { data } = queryparam;
   // console.log(data.data);
-  const { txRef } = data.data;
-  const { status } = data.data;
+  const { txRef } = data.tx;
+  const { status } = data.tx;
   const { respcode } = queryparam;
   console.log(respcode);
   console.log(txRef);
@@ -105,18 +105,18 @@ indexRouter.get("/verify", async (req: any, res: any) => {
           );
           // console.log(delegateRepository);
 
-          let savedUser = await delegateRepository.findOne({
+          let savedUser:any = await delegateRepository.findOne({
             email: delegate.email
           });
           console.log(savedUser);
           res.redirect("https://awlo.org/awlc");
 
         //send sms
-        sendSmsEmail.email_sms(delegate, "verified");
+        sendSmsEmail.email_sms(savedUser, "verified");
         }
       }).catch(err => {
         console.log(`no mention dis gbege - ${err}`);
-        
+
       })
   } catch (error) {
     console.log(error);
@@ -160,7 +160,7 @@ indexRouter.post("/register", async (req: any, res: any) => {
   } catch (error) {
     console.log(`nah for catch block ooo -> ${error}`);
   }
-  
+
 });
 
 indexRouter.post("/checkuser", async (req: any, res: any, next: any) => {

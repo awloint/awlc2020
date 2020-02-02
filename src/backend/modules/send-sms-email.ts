@@ -5,26 +5,21 @@ import { Email } from "./email";
 import * as cancelledEmail from "../emails/cancelledRegistration";
 import * as successEmail from "../emails/successfulRegistration";
 
-
 class SendSmsEmail {
     email_sms(delegate: Delegate, status:any) {
-        let name = (firstName: string, lastName: string): string => {
-            return `${firstName} ${lastName}`;
-        };
-        
+        const name = `${delegate.firstName} ${delegate.lastName}`;
         let newsletter: Newsletter = new Newsletter();
-        
+
 
         let sms: SMS = new SMS();
         let email: Email = new Email();
 
         if(status === "verified"){
-
             //add user to mailing list
             newsletter.addToList(
                 delegate.firstName,
                 delegate.lastName,
-                name(delegate.firstName, delegate.lastName),
+                name,
                 delegate.email,
                 delegate.phone,
                 delegate.country,
@@ -34,10 +29,7 @@ class SendSmsEmail {
             sms.send(
                 "AWLOInt",
                 delegate.phone,
-                `Dear ${name(
-                    delegate.firstName,
-                    delegate.lastName
-                )}, thank you for registering for the AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. Please check your email for more details.
+                `Dear ${name}, thank you for registering for the AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. Please check your email for more details.
         #AWLCSierraLeone2020.
         `
             );
@@ -58,7 +50,7 @@ class SendSmsEmail {
             newsletter.addToList(
                 delegate.firstName,
                 delegate.lastName,
-                name(delegate.firstName, delegate.lastName),
+                name,
                 delegate.email,
                 delegate.phone,
                 delegate.country,
@@ -67,14 +59,11 @@ class SendSmsEmail {
             sms.send(
                 "AWLOInt",
                 delegate.phone,
-                `Dear ${name(
-                    delegate.firstName,
-                    delegate.lastName
-                )}, thank you for taking steps to register for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. To complete your registration, kindly visit https://awlo.org/awlc/awlc2020
+                `Dear ${name}, thank you for taking steps to register for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. To complete your registration, kindly visit https://awlo.org/awlc/awlc2020
         #AWLCSierraLeone2020.
         `
             );
-    
+
             email.sendWithoutAttachment(
                 delegate.firstName,
                 delegate.lastName,
@@ -86,7 +75,7 @@ class SendSmsEmail {
                 cancelledEmail.htmlBodyCancelled(delegate.firstName, delegate.lastName)
             );
         }
-        
+
     }
 }
 export { SendSmsEmail }

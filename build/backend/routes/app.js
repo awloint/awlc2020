@@ -62,8 +62,8 @@ indexRouter.get("/verify", (req, res) => __awaiter(void 0, void 0, void 0, funct
     // console.log(queryparam);
     const { data } = queryparam;
     // console.log(data.data);
-    const { txRef } = data.data;
-    const { status } = data.data;
+    const { txRef } = data.tx;
+    const { status } = data.tx;
     const { respcode } = queryparam;
     console.log(respcode);
     console.log(txRef);
@@ -97,7 +97,7 @@ indexRouter.get("/verify", (req, res) => __awaiter(void 0, void 0, void 0, funct
                 console.log(savedUser);
                 res.redirect("https://awlo.org/awlc");
                 //send sms
-                sendSmsEmail.email_sms(delegate, "verified");
+                sendSmsEmail.email_sms(savedUser, "verified");
             }
         })).catch(err => {
             console.log(`no mention dis gbege - ${err}`);
