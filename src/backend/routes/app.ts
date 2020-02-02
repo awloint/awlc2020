@@ -59,12 +59,14 @@ indexRouter.get("/", (req: any, res: any) => {
 indexRouter.get('/verify', async(req:any, res:any) => {
   const queryparam = await JSON.parse(req.query.resp)
   const {data} = queryparam
-  const {txRef} = data.data
-  const {status} = data.data
+  const {txRef} = data.tx
+  const {status} = data.tx
   const {respcode} = queryparam
   console.log(respcode);
   console.log(txRef);
   console.log(status);
+  console.log(queryparam);
+//   console.log(data.tx)
 
   try {
     await axios.post(`https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/verify?txref=${txRef}`,
@@ -84,12 +86,12 @@ indexRouter.get('/verify', async(req:any, res:any) => {
         response.data.data.chargecode == "00"
       ) {
         console.log('wow wow');
-        
+
         let delegate = new Delegate();
         let delegateRepository = getRepository(Delegate);
         delegate.email = response.data.data.custemail;
-        console.log(delegate);
-        
+        // console.log(delegate);
+
         await delegateRepository.update(
           { email: delegate.email },
           { paid: "yes", paidAt: new Date() }
@@ -98,47 +100,48 @@ indexRouter.get('/verify', async(req:any, res:any) => {
 
         let savedUser = await delegateRepository.findOne({ email: delegate.email });
         console.log(savedUser);
+        res.redirect("https://awlo.org/awlc");
 
-    //     let sms: SMS = new SMS();
-    //     let savedEmail: Email = new Email();
+        let sms: SMS = new SMS();
+        let savedEmail: Email = new Email();
 
-    //     sms.send(
-    //       "AWLOInt",
-    //       savedUser.phone,
-    //       `Dear ${name(
-    //         savedUser.firstName,
-    //         savedUser.lastName
-    //       )}, thank you for registering for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. Please check your email for more details.
-    // #AWLCSierraLeone2020.
-    // `
-    //     );
+        sms.send(
+          "AWLOInt",
+          savedUser!.phone,
+          `Dear ${name(
+            savedUser!.firstName,
+            savedUser!.lastName
+          )}, thank you for registering for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. Please check your email for more details.
+    #AWLCSierraLeone2020.
+    `
+        );
 
-    //     email.sendWithoutAttachment(
-    //       savedUser.firstName,
-    //       savedUser.lastName,
-    //       savedUser.email,
-    //       "African Women in Leadership Organisation",
-    //       "info@awlo.org",
-    //       "#AWLCSierraLeone2020: Your Registration is not complete",
-    //       cancelledEmail.textBodyCancelled(
-    //         savedUser.firstName,
-    //         savedUser.lastName
-    //       ),
-    //       cancelledEmail.htmlBodyCancelled(
-    //         savedUser.firstName,
-    //         savedUser.lastName
-    //       )
-    //     );
+        savedEmail.sendWithoutAttachment(
+          savedUser!.firstName,
+          savedUser!.lastName,
+          savedUser!.email,
+          "African Women in Leadership Organisation",
+          "info@awlo.org",
+          "#AWLCSierraLeone2020: Registration Successful!",
+          successEmail.textBodySuccess(
+            savedUser!.firstName,
+            savedUser!.lastName
+          ),
+          successEmail.htmlBodySuccess(
+            savedUser!.firstName,
+            savedUser!.lastName
+          )
+        );
 
-    //     let newsletter: Newsletter = new Newsletter();
-    //     newsletter.addToList(
-    //     savedUser.firstName,
-    //     savedUser.lastName,
-    //     name(savedUser.firstName, savedUser.lastName),
-    //     savedUser.email,
-    //     savedUser.phone,
-    //     savedUser.country,
-    //     "12024")
+        let newsletter: Newsletter = new Newsletter();
+        newsletter.addToList(
+        savedUser!.firstName,
+        savedUser!.lastName,
+        name(savedUser!.firstName, savedUser!.lastName),
+        savedUser!.email,
+        savedUser!.phone,
+        savedUser!.country,
+        "12024")
       }
     });
   } catch (error) {
@@ -256,11 +259,11 @@ indexRouter.post("/register", async (req: any, res: any) => {
       res.json(response.data.data.link)
     })
     .catch(err => {
-      console.log(`hahahah wetin you think for this ${err}`);    
+      console.log(`hahahah wetin you think for this ${err}`);
     })
   } catch (error) {
     console.log(`nah for catch block ooo -> ${error}`);
-    
+
   }
 });
 

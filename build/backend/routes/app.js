@@ -31,6 +31,7 @@ const axios_1 = __importDefault(require("axios"));
 // import cors from "cors";
 // Import Modules
 const cancelledEmail = __importStar(require("../emails/cancelledRegistration"));
+const successEmail = __importStar(require("../emails/successfulRegistration"));
 const email_1 = require("../modules/email");
 const sms_1 = require("../modules/sms");
 const newsletter_1 = require("../modules/newsletter");
@@ -64,12 +65,14 @@ indexRouter.get("/", (req, res) => {
 indexRouter.get('/verify', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const queryparam = yield JSON.parse(req.query.resp);
     const { data } = queryparam;
-    const { txRef } = data.data;
-    const { status } = data.data;
+    const { txRef } = data.tx;
+    const { status } = data.tx;
     const { respcode } = queryparam;
     console.log(respcode);
     console.log(txRef);
     console.log(status);
+    console.log(queryparam);
+    //   console.log(data.tx)
     try {
         yield axios_1.default.post(`https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/verify?txref=${txRef}`, {
             txref: txRef,
@@ -86,48 +89,20 @@ indexRouter.get('/verify', (req, res) => __awaiter(void 0, void 0, void 0, funct
                 let delegate = new Delegate_1.Delegate();
                 let delegateRepository = typeorm_2.getRepository(Delegate_1.Delegate);
                 delegate.email = response.data.data.custemail;
-                console.log(delegate);
+                // console.log(delegate);
                 yield delegateRepository.update({ email: delegate.email }, { paid: "yes", paidAt: new Date() });
                 // console.log(delegateRepository);
                 let savedUser = yield delegateRepository.findOne({ email: delegate.email });
                 console.log(savedUser);
-                //     let sms: SMS = new SMS();
-                //     let savedEmail: Email = new Email();
-                //     sms.send(
-                //       "AWLOInt",
-                //       savedUser.phone,
-                //       `Dear ${name(
-                //         savedUser.firstName,
-                //         savedUser.lastName
-                //       )}, thank you for registering for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. Please check your email for more details.
-                // #AWLCSierraLeone2020.
-                // `
-                //     );
-                //     email.sendWithoutAttachment(
-                //       savedUser.firstName,
-                //       savedUser.lastName,
-                //       savedUser.email,
-                //       "African Women in Leadership Organisation",
-                //       "info@awlo.org",
-                //       "#AWLCSierraLeone2020: Your Registration is not complete",
-                //       cancelledEmail.textBodyCancelled(
-                //         savedUser.firstName,
-                //         savedUser.lastName
-                //       ),
-                //       cancelledEmail.htmlBodyCancelled(
-                //         savedUser.firstName,
-                //         savedUser.lastName
-                //       )
-                //     );
-                //     let newsletter: Newsletter = new Newsletter();
-                //     newsletter.addToList(
-                //     savedUser.firstName,
-                //     savedUser.lastName,
-                //     name(savedUser.firstName, savedUser.lastName),
-                //     savedUser.email,
-                //     savedUser.phone,
-                //     savedUser.country,
-                //     "12024")
+                res.redirect("https://awlo.org/awlc");
+                let sms = new sms_1.SMS();
+                let savedEmail = new email_1.Email();
+                sms.send("AWLOInt", savedUser.phone, `Dear ${name(savedUser.firstName, savedUser.lastName)}, thank you for registering for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. Please check your email for more details.
+    #AWLCSierraLeone2020.
+    `);
+                savedEmail.sendWithoutAttachment(savedUser.firstName, savedUser.lastName, savedUser.email, "African Women in Leadership Organisation", "info@awlo.org", "#AWLCSierraLeone2020: Registration Successful!", successEmail.textBodySuccess(savedUser.firstName, savedUser.lastName), successEmail.htmlBodySuccess(savedUser.firstName, savedUser.lastName));
+                let newsletter = new newsletter_1.Newsletter();
+                newsletter.addToList(savedUser.firstName, savedUser.lastName, name(savedUser.firstName, savedUser.lastName), savedUser.email, savedUser.phone, savedUser.country, "12024");
             }
         }));
     }
