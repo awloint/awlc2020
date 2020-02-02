@@ -79,7 +79,10 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
             // @ts-ignore
             window.location = "https://awlo.org/awlc/inviteafriend";
           }, 3000);
-        } else {
+        } else if (data === "no_user"){
+          // window.location.href = data;
+          console.log('no user');
+        }else{
           window.location.href = data;
         }
       })

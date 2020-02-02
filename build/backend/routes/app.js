@@ -28,14 +28,8 @@ const typeorm_2 = require("typeorm");
 const Delegate_1 = require("../entity/Delegate");
 const envConfig = __importStar(require("../envConfig"));
 const axios_1 = __importDefault(require("axios"));
-// import cors from "cors";
-// Import Modules
-const cancelledEmail = __importStar(require("../emails/cancelledRegistration"));
-const successEmail = __importStar(require("../emails/successfulRegistration"));
-const email_1 = require("../modules/email");
-const sms_1 = require("../modules/sms");
-const newsletter_1 = require("../modules/newsletter");
 const payment_1 = require("../modules/payment");
+const send_sms_email_1 = require("../modules/send-sms-email");
 typeorm_1.createConnection();
 const app = express_1.default();
 exports.app = app;
@@ -65,14 +59,15 @@ indexRouter.get("/", (req, res) => {
 });
 indexRouter.get("/verify", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const queryparam = yield JSON.parse(req.query.resp);
+    // console.log(queryparam);
     const { data } = queryparam;
-    const { txRef } = data.tx;
-    const { status } = data.tx;
+    // console.log(data.data);
+    const { txRef } = data.data;
+    const { status } = data.data;
     const { respcode } = queryparam;
     console.log(respcode);
     console.log(txRef);
     console.log(status);
-    console.log(queryparam);
     //   console.log(data.tx)
     try {
         yield axios_1.default
@@ -85,10 +80,11 @@ indexRouter.get("/verify", (req, res) => __awaiter(void 0, void 0, void 0, funct
             }
         })
             .then((response) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log(response.data.data);
+            // console.log(response.data.data);
             if (response.data.data.status === "successful" &&
                 response.data.data.chargecode == "00") {
-                console.log("wow wow");
+                // console.log("wow wow");
+                const sendSmsEmail = new send_sms_email_1.SendSmsEmail();
                 let delegate = new Delegate_1.Delegate();
                 let delegateRepository = typeorm_2.getRepository(Delegate_1.Delegate);
                 delegate.email = response.data.data.custemail;
@@ -100,16 +96,12 @@ indexRouter.get("/verify", (req, res) => __awaiter(void 0, void 0, void 0, funct
                 });
                 console.log(savedUser);
                 res.redirect("https://awlo.org/awlc");
-                let sms = new sms_1.SMS();
-                let savedEmail = new email_1.Email();
-                sms.send("AWLOInt", savedUser.phone, `Dear ${name(savedUser.firstName, savedUser.lastName)}, thank you for registering for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. Please check your email for more details.
-    #AWLCSierraLeone2020.
-    `);
-                savedEmail.sendWithoutAttachment(savedUser.firstName, savedUser.lastName, savedUser.email, "African Women in Leadership Organisation", "info@awlo.org", "#AWLCSierraLeone2020: Registration Successful!", successEmail.textBodySuccess(savedUser.firstName, savedUser.lastName), successEmail.htmlBodySuccess(savedUser.firstName, savedUser.lastName));
-                let newsletter = new newsletter_1.Newsletter();
-                newsletter.addToList(savedUser.firstName, savedUser.lastName, name(savedUser.firstName, savedUser.lastName), savedUser.email, savedUser.phone, savedUser.country, "12024");
+                //send sms
+                sendSmsEmail.email_sms(delegate);
             }
-        }));
+        })).catch(err => {
+            console.log(`no mention dis gbege - ${err}`);
+        });
     }
     catch (error) {
         console.log(error);
@@ -117,7 +109,7 @@ indexRouter.get("/verify", (req, res) => __awaiter(void 0, void 0, void 0, funct
 }));
 //post routes
 indexRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.fields);
+    // console.log(req.fields);
     const data = req.fields;
     let delegate = new Delegate_1.Delegate();
     delegate.firstName = data.firstName;
@@ -136,25 +128,6 @@ indexRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, fu
     console.log("User has been saved");
     // let savedUser = await delegateRepository.find();
     // console.log("All Users from the db: ", savedUser);
-    let newsletter = new newsletter_1.Newsletter();
-    newsletter.addToList(delegate.firstName, delegate.lastName, name(delegate.firstName, delegate.lastName), delegate.email, delegate.phone, delegate.country, "12025");
-    let sms = new sms_1.SMS();
-    let email = new email_1.Email();
-    sms.send("AWLOInt", delegate.phone, `Dear ${name(delegate.firstName, delegate.lastName)}, thank you for taking steps to register for AWLC Sierra Leone 2020 holding from 2nd – 5th April 2020 at Freetown International Convention Center, Bintumani. To complete your registration, kindly visit https://awlo.org/awlc/awlc2020
-    #AWLCSierraLeone2020.
-    `);
-    email.sendWithoutAttachment(delegate.firstName, delegate.lastName, delegate.email, "African Women in Leadership Organisation", "info@awlo.org", "#AWLCSierraLeone2020: Your Registration is not complete", cancelledEmail.textBodyCancelled(delegate.firstName, delegate.lastName), cancelledEmail.htmlBodyCancelled(delegate.firstName, delegate.lastName));
-    // initialize the payment details
-    const redirectUrl = "http://localhost:3000/verify";
-    var currency = "NGN";
-    var amount = 126875;
-    let txref = "AWLCSierra2020-" + Math.floor(Math.random() * 68954123) + 123145;
-    if (delegate.country !== "Nigeria") {
-        currency = "USD";
-    }
-    if (currency == "USD") {
-        amount = 350;
-    }
     try {
         const payment = new payment_1.Payment();
         yield payment
@@ -179,11 +152,10 @@ indexRouter.post("/checkuser", (req, res, next) => __awaiter(void 0, void 0, voi
     });
     console.log("Delegate: ", singleDelegate);
     if (singleDelegate) {
-        console.log(singleDelegate);
         if (singleDelegate.paid === "yes") {
             res.send(JSON.stringify("user_exists"));
         }
-        else {
+        else if (singleDelegate !== undefined) {
             try {
                 const payment = new payment_1.Payment();
                 yield payment
@@ -202,9 +174,9 @@ indexRouter.post("/checkuser", (req, res, next) => __awaiter(void 0, void 0, voi
             //   res.send(JSON.stringify("user_exist_but_not_paid"));
         }
     }
-    else {
+    else if (singleDelegate == undefined) {
         res.send(JSON.stringify("no_user"));
-        console.log(singleDelegate);
+        console.log(`yawa - ${singleDelegate}`);
     }
 }));
 app.use(config.baseUrl, indexRouter);
