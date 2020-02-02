@@ -69,16 +69,21 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
         console.log(data)
         //@ts-ignore
         if (data === "user_exists") {
-            //@ts-ignore
+          //@ts-ignore
           swal(
             "Already Registered",
             "You have already registered for the conference.",
             "warning"
           );
           setTimeout(() => {
-              // @ts-ignore
+            // @ts-ignore
             window.location = "https://awlo.org/awlc/inviteafriend";
           }, 3000);
+        } else if (data === "no_user"){
+          // window.location.href = data;
+          console.log('no user');
+        }else{
+          window.location.href = data;
         }
       })
       .catch(err =>{
@@ -91,7 +96,7 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
   form!.addEventListener("submit", e => {
     let forms = document.getElementsByClassName("needs-validation");
     // Check to see if form has validation errors
-    let validation = Array.prototype.filter.call(forms, form => {
+    let validation = Array.prototype.filter.call(forms, (form: { checkValidity: () => boolean; classList: { add: (arg0: string) => void; }; }) => {
       if (form.checkValidity() === false) {
         e.preventDefault();
         e.stopPropagation();
@@ -141,8 +146,10 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
                 // @ts-ignore
               window.location = "https://awlo.org/awlc/inviteafriend";
             }, 3000);
+          } else if (data === "no_user") {
+             console.log(data);
           } else {
-            window.location.href = data;
+              window.location.href = data;
           }
         })
         .catch(error => {

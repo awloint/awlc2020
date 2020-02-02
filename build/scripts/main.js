@@ -66,6 +66,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
                     window.location = "https://awlo.org/awlc/inviteafriend";
                 }, 3000);
             }
+            else if (data === "no_user") {
+                // window.location.href = data;
+                console.log('no user');
+            }
+            else {
+                window.location.href = data;
+            }
         })
             .catch(err => {
             console.log(`e don happen ${err}`);
@@ -76,7 +83,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     form.addEventListener("submit", e => {
         let forms = document.getElementsByClassName("needs-validation");
         // Check to see if form has validation errors
-        let validation = Array.prototype.filter.call(forms, form => {
+        let validation = Array.prototype.filter.call(forms, (form) => {
             if (form.checkValidity() === false) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -114,6 +121,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
                         // @ts-ignore
                         window.location = "https://awlo.org/awlc/inviteafriend";
                     }, 3000);
+                }
+                else if (data === "no_user") {
+                    console.log(data);
                 }
                 else {
                     window.location.href = data;

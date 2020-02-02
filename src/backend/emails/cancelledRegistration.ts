@@ -19,7 +19,7 @@ const htmlBodyCancelled = (firstName: string, lastName: string) => {
         <p>To complete your registration please click here - <a href="https://awlo.org/awlc/awlc2020/">awlo.org</a>/</p>
         <p>We are excited about all that is in store for you, as we have lined up engaging sessions with frontline leaders, and it will be a time to mix with peers from all over the world.</p>
         <p>Please constantly visit <a href="https://awlo.org/awlc">www.awlo.org/awlc</a>, to stay updated as we countdown to AWLC Sierra Leone 2020.</p>
-        <p>For enquiries and support, reach us by mail via <a href="mailto:info@awlo.org">info@awlo.org</a> or <a href="tel:+234022473972">+234022473972</a>. Also, follow <strong>#AWLCSierraLeone2020</strong> and <strong>@awloint</strong> for updates across all social media.</p>
+        <p>For enquiries and support, reach us by mail via <a href="mailto:info@awlo.org">info@awlo.org</a> or <a href="tel:+2348022473972">+2348022473972</a>. Also, follow <strong>#AWLCSierraLeone2020</strong> and <strong>@awloint</strong> for updates across all social media.</p>
         <p>See you in Sierra Leone!</p>
         </td>
         </tr>
@@ -56,7 +56,7 @@ const textBodyCancelled = (firstName: string, lastName: string) => {
             To complete your registration, please visit https://awlo.org/awlc/awlc2020/
             We are excited about all that is in store for you, as we have lined up engaging sessions with frontline leaders, and it will be a time to mix with peers from all over the world.
             Please check in with www.awlo.org/awlc, to stay updated as we countdown to AWLC Sierra Leone 2020.
-            For enquiries and support, reach us via info@awlo.org or +234022473972. Also, follow #AWLCSierraLeone2020 and @awloint for updates across social media.
+            For enquiries and support, reach us via info@awlo.org or +2348022473972. Also, follow #AWLCSierraLeone2020 and @awloint for updates across social media.
             See you in Sierra Leone.`;
 };
 
