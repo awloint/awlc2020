@@ -1,12 +1,13 @@
 import * as config from "./config";
 import express from "express";
-import bodyParser from "body-parser";
+import bodyParser, { json } from "body-parser";
 import formidable from "express-formidable";
 import { createConnection, getConnection } from "typeorm";
 import { getRepository } from "typeorm";
 import { Delegate } from "../entity/Delegate";
 import * as envConfig from "../envConfig"
 import axios from "axios";
+import cors from "cors";
 
 createConnection();
 
@@ -29,6 +30,7 @@ app.use((req: any, res: any, next: any) => {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(formidable());
+app.use(cors());
 
 app.use((req: any, res: any, next: any) => {
   console.log("server started successfully");
@@ -42,32 +44,43 @@ indexRouter.get("/", (req: any, res: any) => {
   res.send("Working on the server");
 });
 
-indexRouter.get('/verify', (req:any, res:any, next:any) => {
-  const {txref} = req.query;
-  console.log(txref);
+indexRouter.get('/verify', async(req:any, res:any) => {
+  const queryparam = await JSON.parse(req.query.resp)
+  const {data} = queryparam
+  const {txRef} = data.data
+  const {status} = data.data
+  const {respcode} = queryparam
+  console.log(respcode);
+  console.log(txRef);
+  console.log(status);
 
   try {
-    axios({
-      method: "post",
-      url: "https://api.ravepay.com/flwv3-pug/getpaidx/api/v2/verify",
-      data: {
-        txref: txref,
+    await axios.post(`https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/verify?txref=${txRef}`,
+      {
+        txref: txRef,
         SECKEY: envConfig.secretKey
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
-    }).then(response => {
+    ).then(response => {
       console.log(response.data.data);
       res.json(response.data.data);
-    });
+    })
+    .catch(err => {
+      console.log(`another gbege ${err}`);
+      
+    })
   } catch (error) {
-    console.log(error);
-
-    next(error);
+    console.log(`yawa error${error}`);
   }
 })
 
 
 //post routes
-indexRouter.post("/register", async (req: any, res: any, next: any) => {
+indexRouter.post("/register", async (req: any, res: any) => {
   console.log(req.fields);
   const data = req.fields;
   let delegate = new Delegate();
@@ -90,7 +103,7 @@ indexRouter.post("/register", async (req: any, res: any, next: any) => {
   // console.log("All Users from the db: ", savedUser);
 
   // initialize the payment details
-  const redirectUrl = "https://awlo.org/awlc/awlc2020/backend/verify";
+  const redirectUrl = "http://localhost:3000/verify";
   var currency: string= "NGN";
   var amount: number = 126875;
   let txref: string =
@@ -123,11 +136,15 @@ indexRouter.post("/register", async (req: any, res: any, next: any) => {
         redirect_url: redirectUrl
       }
     }).then(response => {
-    //   console.log(response.data.data.link);
-      res.send(JSON.stringify(response.data.data.link));
-    });
+      console.log(response.data.data.link);
+      res.json(response.data.data.link)
+    })
+    .catch(err => {
+      console.log(`hahahah wetin you think for this ${err}`);    
+    })
   } catch (error) {
-    next(error);
+    console.log(`nah for catch block ooo -> ${error}`);
+    
   }
 });
 

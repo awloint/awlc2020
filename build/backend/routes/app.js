@@ -28,6 +28,7 @@ const typeorm_2 = require("typeorm");
 const Delegate_1 = require("../entity/Delegate");
 const envConfig = __importStar(require("../envConfig"));
 const axios_1 = __importDefault(require("axios"));
+const cors_1 = __importDefault(require("cors"));
 typeorm_1.createConnection();
 const app = express_1.default();
 exports.app = app;
@@ -41,6 +42,7 @@ app.use((req, res, next) => {
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(body_parser_1.default.json());
 app.use(express_formidable_1.default());
+app.use(cors_1.default());
 app.use((req, res, next) => {
     console.log("server started successfully");
     next();
@@ -50,29 +52,37 @@ indexRouter.get("/", (req, res) => {
     console.log(req.query);
     res.send("Working on the server");
 });
-indexRouter.get('/verify', (req, res, next) => {
-    const { txref } = req.query;
-    console.log(txref);
+indexRouter.get('/verify', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const queryparam = yield JSON.parse(req.query.resp);
+    const { data } = queryparam;
+    const { txRef } = data.data;
+    const { status } = data.data;
+    const { respcode } = queryparam;
+    console.log(respcode);
+    console.log(txRef);
+    console.log(status);
     try {
-        axios_1.default({
-            method: "post",
-            url: "https://api.ravepay.com/flwv3-pug/getpaidx/api/v2/verify",
-            data: {
-                txref: txref,
-                SECKEY: envConfig.secretKey
+        yield axios_1.default.post(`https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/verify?txref=${txRef}`, {
+            txref: txRef,
+            SECKEY: envConfig.secretKey
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
             }
         }).then(response => {
             console.log(response.data.data);
             res.json(response.data.data);
+        })
+            .catch(err => {
+            console.log(`another gbege ${err}`);
         });
     }
     catch (error) {
-        console.log(error);
-        next(error);
+        console.log(`yawa error${error}`);
     }
-});
+}));
 //post routes
-indexRouter.post("/register", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+indexRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.fields);
     const data = req.fields;
     let delegate = new Delegate_1.Delegate();
@@ -93,7 +103,7 @@ indexRouter.post("/register", (req, res, next) => __awaiter(void 0, void 0, void
     // let savedUser = await delegateRepository.find();
     // console.log("All Users from the db: ", savedUser);
     // initialize the payment details
-    const redirectUrl = "https://awlo.org/awlc/awlc2020/backend/verify";
+    const redirectUrl = "http://localhost:3000/verify";
     var currency = "NGN";
     var amount = 126875;
     let txref = "AWLCSierra2020-" + Math.floor(Math.random() * 68954123) + 123145;
@@ -122,12 +132,15 @@ indexRouter.post("/register", (req, res, next) => __awaiter(void 0, void 0, void
                 redirect_url: redirectUrl
             }
         }).then(response => {
-            //   console.log(response.data.data.link);
-            res.send(JSON.stringify(response.data.data.link));
+            console.log(response.data.data.link);
+            res.json(response.data.data.link);
+        })
+            .catch(err => {
+            console.log(`hahahah wetin you think for this ${err}`);
         });
     }
     catch (error) {
-        next(error);
+        console.log(`nah for catch block ooo -> ${error}`);
     }
 }));
 indexRouter.post("/checkuser", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
