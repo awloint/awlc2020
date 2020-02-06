@@ -56,6 +56,12 @@ __decorate([
     __metadata("design:type", String)
 ], Delegate.prototype, "member", void 0);
 __decorate([
+    typeorm_1.Column({
+        nullable: true
+    }),
+    __metadata("design:type", String)
+], Delegate.prototype, "membershipCode", void 0);
+__decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], Delegate.prototype, "referringChannel", void 0);

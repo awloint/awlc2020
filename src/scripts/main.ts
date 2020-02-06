@@ -19,9 +19,8 @@ window.intlTelInput(input, {
   utilsScript: "scripts/utils.js"
 });
 
-document.addEventListener("DOMContentLoaded", (e:any) => {
-
-    // Add the current year to the footer credit
+document.addEventListener("DOMContentLoaded", (e: any) => {
+  // Add the current year to the footer credit
   let date: Date = new Date();
   const year = date.getFullYear();
   let yearContent: any = document.querySelector("#year");
@@ -29,33 +28,33 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
 
   // Change the typed value of the first letter to uppercase for input fields and lowercase for email fields
   //@ts-ignore
-  document.querySelector("#firstName")!.onchange = (e:any) => {
-      //@ts-ignore
-    let val:any = document.querySelector("#firstName")!.value;
+  document.querySelector("#firstName")!.onchange = (e: any) => {
+    //@ts-ignore
+    let val: any = document.querySelector("#firstName")!.value;
     const regexp: RegExp = /\b[a-z]/g;
 
     val = val.charAt(0).toUpperCase() + val.substr(1);
   };
 
   //@ts-ignore
-  document.querySelector("#lastName")!.onchange = (e:any) => {
-      //@ts-ignore
-    let val:any = document.querySelector("#lastName")!.value;
+  document.querySelector("#lastName")!.onchange = (e: any) => {
+    //@ts-ignore
+    let val: any = document.querySelector("#lastName")!.value;
     const regexp: RegExp = /\b[a-z]/g;
 
     val = val.charAt(0).toUpperCase() + val.substr(1);
   };
 
   //@ts-ignore
-  document.querySelector("#email")!.onchange = (e:any) => {
-      //@ts-ignore
-    let val:any = document.querySelector("#email")!.value;
+  document.querySelector("#email")!.onchange = (e: any) => {
+    //@ts-ignore
+    let val: any = document.querySelector("#email")!.value;
     const regexp: RegExp = /\b[a-z]/g;
 
     val = val.toLowerCase();
 
-    const emaildata = new FormData;
-    emaildata.append('email', val)
+    const emaildata = new FormData();
+    emaildata.append("email", val);
 
     // initiate a fetch call
     fetch("http://localhost:3000/checkuser", {
@@ -66,7 +65,7 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
         return response.json();
       })
       .then(data => {
-        console.log(data)
+        console.log(data);
         //@ts-ignore
         if (data === "user_exists") {
           //@ts-ignore
@@ -79,30 +78,55 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
             // @ts-ignore
             window.location = "https://awlo.org/awlc/inviteafriend";
           }, 3000);
-        } else if (data === "no_user"){
+        } else if (data === "no_user") {
           // window.location.href = data;
-          console.log('no user');
-        }else{
+          console.log("no user");
+        } else {
           window.location.href = data;
         }
       })
-      .catch(err =>{
+      .catch(err => {
         console.log(`e don happen ${err}`);
-      })
+      });
   };
+
+  // Add an event listener for the organisation input field
+    const memberExists = document.querySelector("#yesMember");
+    const memberDontExists = document.querySelector("#noMember");
+
+    const organisationQuestion = document.querySelector("#org");
+    const organisationTextArea = document.querySelector("input#membershipCode");
+
+    memberExists!.addEventListener("click", e => {
+        //@ts-ignore
+      organisationQuestion!.style.display = "block";
+      //@ts-ignore
+      organisationTextArea!.setAttribute("required", 1);
+    });
+
+    memberDontExists!.addEventListener("click", e => {
+        //@ts-ignore
+      organisationQuestion!.style.display = "none";
+    });
 
   const form = document.querySelector("form");
   // On Form Submit
   form!.addEventListener("submit", e => {
     let forms = document.getElementsByClassName("needs-validation");
     // Check to see if form has validation errors
-    let validation = Array.prototype.filter.call(forms, (form: { checkValidity: () => boolean; classList: { add: (arg0: string) => void; }; }) => {
-      if (form.checkValidity() === false) {
-        e.preventDefault();
-        e.stopPropagation();
+    let validation = Array.prototype.filter.call(
+      forms,
+      (form: {
+        checkValidity: () => boolean;
+        classList: { add: (arg0: string) => void };
+      }) => {
+        if (form.checkValidity() === false) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        form.classList.add("was-validated");
       }
-      form.classList.add("was-validated");
-    });
+    );
 
     // Get the referrer value from the URL
     const referrer = window.location.href.slice(
@@ -119,7 +143,7 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
       document.querySelector("button")!.innerHTML =
         'Loading <span class="spinner"></span><i class="fa fa-spinner fa-spin"></i></span>';
 
-        //@ts-ignore
+      //@ts-ignore
       const formdata = new FormData(form);
 
       formdata.append("referrer", referrer);
@@ -133,23 +157,23 @@ document.addEventListener("DOMContentLoaded", (e:any) => {
           return response.json();
         })
         .then(data => {
-          console.log(data)
+          console.log(data);
           //@ts-ignore
           if (data === "user_exists") {
-              //@ts-ignore
+            //@ts-ignore
             swal(
               "Already Registered",
               "You have already registered for the conference.",
               "warning"
             );
             setTimeout(() => {
-                // @ts-ignore
+              // @ts-ignore
               window.location = "https://awlo.org/awlc/inviteafriend";
             }, 3000);
           } else if (data === "no_user") {
-             console.log(data);
+            console.log(data);
           } else {
-              window.location.href = data;
+            window.location.href = data;
           }
         })
         .catch(error => {
