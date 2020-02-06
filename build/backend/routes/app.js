@@ -122,12 +122,13 @@ indexRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, fu
     delegate.member = data.member;
     delegate.referringChannel = data.referringChannel;
     delegate.firstConference = data.firstConference;
+    delegate.membershipCode = data.membershipCode;
     delegate.referrer = data.referrer;
     let delegateRepository = typeorm_2.getRepository(Delegate_1.Delegate);
     yield delegateRepository.save(delegate);
     console.log("User has been saved");
-    const sendSmsEmail = new send_sms_email_1.SendSmsEmail(); //send sms
-    sendSmsEmail.email_sms(delegate, "not_verified");
+    //   const sendSmsEmail: SendSmsEmail = new SendSmsEmail();//send sms
+    //   sendSmsEmail.email_sms(delegate, "not_verified");
     try {
         const payment = new payment_1.Payment();
         yield payment

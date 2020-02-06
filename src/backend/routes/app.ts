@@ -7,14 +7,6 @@ import { getRepository } from "typeorm";
 import { Delegate } from "../entity/Delegate";
 import * as envConfig from "../envConfig";
 import axios from "axios";
-// import cors from "cors";
-
-// Import Modules
-import * as cancelledEmail from "../emails/cancelledRegistration";
-import * as successEmail from "../emails/successfulRegistration";
-import { Email } from "../modules/email";
-import { SMS } from "../modules/sms";
-import { Newsletter } from "../modules/newsletter";
 import { Payment } from "../modules/payment";
 import { SendSmsEmail } from "../modules/send-sms-email"
 
@@ -138,13 +130,14 @@ indexRouter.post("/register", async (req: any, res: any) => {
   delegate.member = data.member;
   delegate.referringChannel = data.referringChannel;
   delegate.firstConference = data.firstConference;
+  delegate.membershipCode = data.membershipCode;
   delegate.referrer = data.referrer;
   let delegateRepository = getRepository(Delegate);
   await delegateRepository.save(delegate);
   console.log("User has been saved");
 
-  const sendSmsEmail: SendSmsEmail = new SendSmsEmail();//send sms
-  sendSmsEmail.email_sms(delegate, "not_verified");
+//   const sendSmsEmail: SendSmsEmail = new SendSmsEmail();//send sms
+//   sendSmsEmail.email_sms(delegate, "not_verified");
 
   try {
     const payment: Payment = new Payment();

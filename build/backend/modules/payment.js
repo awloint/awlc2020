@@ -17,11 +17,18 @@ const name = (firstName, lastName) => {
 };
 class Payment {
     start(delegate, amount, currency) {
-        let txref = "AWLCSierra2020-" + Math.floor(Math.random() * 68954123) + 123145;
-        if (delegate.country !== "Nigeria") {
-            currency = "USD";
+        let txref = "AWLCSierra2020-" + Math.floor(Math.random() * 1111) + 9999;
+        if (delegate.membershipCode === "AWLCMem564") {
+            if (delegate.country === "Nigeria") {
+                amount = 54525;
+            }
+            else {
+                amount = 150;
+                currency = "USD";
+            }
         }
-        if (currency == "USD") {
+        else {
+            currency = "USD";
             amount = 350;
         }
         return axios_1.default({

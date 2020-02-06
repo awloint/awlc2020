@@ -9,12 +9,16 @@ const name = (firstName: string, lastName: string): string => {
 class Payment {
   start(delegate: Delegate, amount: number, currency: string): Promise<any> {
     let txref: string =
-      "AWLCSierra2020-" + Math.floor(Math.random() * 68954123) + 123145;
-    if (delegate.country !== "Nigeria") {
+      "AWLCSierra2020-" + Math.floor(Math.random() * 1111) + 9999;
+    if (delegate.membershipCode === "AWLCMem564") {
+        if (delegate.country === "Nigeria") {
+            amount = 54525;
+        } else {
+            amount = 150;
+            currency = "USD";
+        }
+    } else {
       currency = "USD";
-    }
-
-    if (currency == "USD") {
       amount = 350;
     }
 

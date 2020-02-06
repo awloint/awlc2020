@@ -92,6 +92,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
     memberDontExists.addEventListener("click", e => {
         //@ts-ignore
         organisationQuestion.style.display = "none";
+        //@ts-ignore
+        organisationTextArea.removeAttribute("required");
     });
     const form = document.querySelector("form");
     // On Form Submit
