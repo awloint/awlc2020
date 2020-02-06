@@ -28,8 +28,10 @@ class Payment {
             }
         }
         else {
-            currency = "USD";
-            amount = 350;
+            if (delegate.country !== "Nigeria") {
+                currency = "USD";
+                amount = 350;
+            }
         }
         return axios_1.default({
             method: "post",
@@ -46,7 +48,7 @@ class Payment {
                 currency: currency,
                 txref: txref,
                 PBFPubKey: envConfig.raveKey,
-                redirect_url: "https://awlo.org/awlc/awlc2020/backend/verify",
+                redirect_url: "http://localhost:3000/verify",
                 subaccounts: [
                     {
                         id: "RS_D68E8E1087312CB80F3BD77721EEA468"
