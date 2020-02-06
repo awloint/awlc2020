@@ -133,7 +133,7 @@ indexRouter.post("/register", formidable(), async (req: any, res: any) => {
   try {
     const payment: Payment = new Payment();
     await payment
-      .start(delegate, 10, "NGN")
+      .start(delegate, 126875, "NGN")
       .then(response => {
         console.log(response.data.data.link);
         res.json(response.data.data.link);
@@ -162,7 +162,7 @@ indexRouter.post("/checkuser", formidable(), async (req: any, res: any, next: an
       try {
         const payment: Payment = new Payment();
         await payment
-          .start(singleDelegate, 10, "NGN")
+          .start(singleDelegate, 126875, "NGN")
           .then(response => {
             console.log(response.data.data.link);
             res.json(response.data.data.link);
