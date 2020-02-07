@@ -17,12 +17,21 @@ const name = (firstName, lastName) => {
 };
 class Payment {
     start(delegate, amount, currency) {
-        let txref = "AWLCSierra2020-" + Math.floor(Math.random() * 68954123) + 123145;
-        if (delegate.country !== "Nigeria") {
-            currency = "USD";
+        let txref = "AWLCSierra2020-" + Math.floor(Math.random() * 1111) + 9999;
+        if (delegate.membershipCode === "AWLCMem564") {
+            if (delegate.country === "Nigeria") {
+                amount = 54525;
+            }
+            else {
+                amount = 150;
+                currency = "USD";
+            }
         }
-        if (currency == "USD") {
-            amount = 350;
+        else {
+            if (delegate.country !== "Nigeria") {
+                currency = "USD";
+                amount = 350;
+            }
         }
         return axios_1.default({
             method: "post",
@@ -39,7 +48,7 @@ class Payment {
                 currency: currency,
                 txref: txref,
                 PBFPubKey: envConfig.raveKey,
-                redirect_url: "https://awlo.org/awlc/awlc2020/backend/verify",
+                redirect_url: "http://localhost:3000/verify",
                 subaccounts: [
                     {
                         id: "RS_D68E8E1087312CB80F3BD77721EEA468"

@@ -42,8 +42,6 @@ app.use((req, res, next) => {
 });
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(body_parser_1.default.json());
-app.use(express_formidable_1.default());
-// app.use(cors());
 app.use((req, res, next) => {
     console.log("server started successfully");
     next();
@@ -57,22 +55,15 @@ indexRouter.get("/", (req, res) => {
     console.log(req.query);
     res.send("Working on the server");
 });
-indexRouter.get("/verify", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const queryparam = yield JSON.parse(req.query.resp);
-    // console.log(queryparam);
-    const { data } = queryparam;
-    // console.log(data.data);
-    const { txRef } = data.tx;
-    const { status } = data.tx;
-    const { respcode } = queryparam;
-    console.log(respcode);
-    console.log(txRef);
-    console.log(status);
-    //   console.log(data.tx)
+indexRouter.post("/verify", (req, res) => {
+    const reqbody = req.query;
+    // console.log(reqbody);
+    const { txref } = reqbody;
+    //   console.log(txref);
     try {
-        yield axios_1.default
-            .post(`https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/verify?txref=${txRef}`, {
-            txref: txRef,
+        axios_1.default
+            .post(`https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/verify?txref=${txref}`, {
+            txref: txref,
             SECKEY: envConfig.secretKey
         }, {
             headers: {
@@ -80,7 +71,7 @@ indexRouter.get("/verify", (req, res) => __awaiter(void 0, void 0, void 0, funct
             }
         })
             .then((response) => __awaiter(void 0, void 0, void 0, function* () {
-            // console.log(response.data.data);
+            console.log(response);
             if (response.data.data.status === "successful" &&
                 response.data.data.chargecode == "00") {
                 // console.log("wow wow");
@@ -106,9 +97,9 @@ indexRouter.get("/verify", (req, res) => __awaiter(void 0, void 0, void 0, funct
     catch (error) {
         console.log(error);
     }
-}));
+});
 //post routes
-indexRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+indexRouter.post("/register", express_formidable_1.default(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // console.log(req.fields);
     const data = req.fields;
     let delegate = new Delegate_1.Delegate();
@@ -122,6 +113,7 @@ indexRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, fu
     delegate.member = data.member;
     delegate.referringChannel = data.referringChannel;
     delegate.firstConference = data.firstConference;
+    delegate.membershipCode = data.membershipCode;
     delegate.referrer = data.referrer;
     let delegateRepository = typeorm_2.getRepository(Delegate_1.Delegate);
     yield delegateRepository.save(delegate);
@@ -131,7 +123,7 @@ indexRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, fu
     try {
         const payment = new payment_1.Payment();
         yield payment
-            .start(delegate, 126875, "NGN")
+            .start(delegate, 10, "NGN")
             .then(response => {
             console.log(response.data.data.link);
             res.json(response.data.data.link);
@@ -144,7 +136,7 @@ indexRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, fu
         console.log(`nah for catch block ooo -> ${error}`);
     }
 }));
-indexRouter.post("/checkuser", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+indexRouter.post("/checkuser", express_formidable_1.default(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     //   console.log(req.fields);
     let delegateRepository = typeorm_1.getConnection().getRepository(Delegate_1.Delegate);
     let singleDelegate = yield delegateRepository.findOne({
@@ -159,7 +151,7 @@ indexRouter.post("/checkuser", (req, res, next) => __awaiter(void 0, void 0, voi
             try {
                 const payment = new payment_1.Payment();
                 yield payment
-                    .start(singleDelegate, 126875, "NGN")
+                    .start(singleDelegate, 10, "NGN")
                     .then(response => {
                     console.log(response.data.data.link);
                     res.json(response.data.data.link);

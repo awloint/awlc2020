@@ -9,13 +9,19 @@ const name = (firstName: string, lastName: string): string => {
 class Payment {
   start(delegate: Delegate, amount: number, currency: string): Promise<any> {
     let txref: string =
-      "AWLCSierra2020-" + Math.floor(Math.random() * 68954123) + 123145;
-    if (delegate.country !== "Nigeria") {
-      currency = "USD";
-    }
-
-    if (currency == "USD") {
-      amount = 350;
+      "AWLCSierra2020-" + Math.floor(Math.random() * 1111) + 9999;
+    if (delegate.membershipCode === envConfig.membershipCode) {
+        if (delegate.country === "Nigeria") {
+            amount = 54525;
+        } else {
+            amount = 150;
+            currency = "USD";
+        }
+    } else {
+      if (delegate.country !== "Nigeria") {
+          currency = "USD";
+          amount = 350;
+      }
     }
 
     return axios({
@@ -33,7 +39,7 @@ class Payment {
         currency: currency,
         txref: txref,
         PBFPubKey: envConfig.raveKey,
-        redirect_url: "https://awlo.org/awlc/awlc2020/backend/verify",
+        redirect_url: "http://localhost:3000/verify",
         subaccounts: [
           {
             id: "RS_D68E8E1087312CB80F3BD77721EEA468"

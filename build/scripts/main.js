@@ -45,8 +45,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
         let val = document.querySelector("#email").value;
         const regexp = /\b[a-z]/g;
         val = val.toLowerCase();
-        const emaildata = new FormData;
-        emaildata.append('email', val);
+        const emaildata = new FormData();
+        emaildata.append("email", val);
         // initiate a fetch call
         fetch("http://localhost:3000/checkuser", {
             method: "post",
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             }
             else if (data === "no_user") {
                 // window.location.href = data;
-                console.log('no user');
+                console.log("no user");
             }
             else {
                 window.location.href = data;
@@ -78,6 +78,23 @@ document.addEventListener("DOMContentLoaded", (e) => {
             console.log(`e don happen ${err}`);
         });
     };
+    // Add an event listener for the organisation input field
+    const memberExists = document.querySelector("#yesMember");
+    const memberDontExists = document.querySelector("#noMember");
+    const organisationQuestion = document.querySelector("#org");
+    const organisationTextArea = document.querySelector("input#membershipCode");
+    memberExists.addEventListener("click", e => {
+        //@ts-ignore
+        organisationQuestion.style.display = "block";
+        //@ts-ignore
+        organisationTextArea.setAttribute("required", 1);
+    });
+    memberDontExists.addEventListener("click", e => {
+        //@ts-ignore
+        organisationQuestion.style.display = "none";
+        //@ts-ignore
+        organisationTextArea.removeAttribute("required");
+    });
     const form = document.querySelector("form");
     // On Form Submit
     form.addEventListener("submit", e => {

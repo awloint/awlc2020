@@ -7,14 +7,6 @@ import { getRepository } from "typeorm";
 import { Delegate } from "../entity/Delegate";
 import * as envConfig from "../envConfig";
 import axios from "axios";
-// import cors from "cors";
-
-// Import Modules
-import * as cancelledEmail from "../emails/cancelledRegistration";
-import * as successEmail from "../emails/successfulRegistration";
-import { Email } from "../modules/email";
-import { SMS } from "../modules/sms";
-import { Newsletter } from "../modules/newsletter";
 import { Payment } from "../modules/payment";
 import { SendSmsEmail } from "../modules/send-sms-email"
 
@@ -38,8 +30,6 @@ app.use((req: any, res: any, next: any) => {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(formidable());
-// app.use(cors());
 
 app.use((req: any, res: any, next: any) => {
   console.log("server started successfully");
@@ -58,25 +48,18 @@ indexRouter.get("/", (req: any, res: any) => {
   res.send("Working on the server");
 });
 
-indexRouter.get("/verify", async (req: any, res: any) => {
-  const queryparam = await JSON.parse(req.query.resp);
-  // console.log(queryparam);
-  const { data } = queryparam;
-  // console.log(data.data);
-  const { txRef } = data.tx;
-  const { status } = data.tx;
-  const { respcode } = queryparam;
-  console.log(respcode);
-  console.log(txRef);
-  console.log(status);
-  //   console.log(data.tx)
+indexRouter.post("/verify", (req: any, res: any) => {
+    const reqbody = req.query;
+    // console.log(reqbody);
+  const { txref } = reqbody;
+//   console.log(txref);
 
   try {
-    await axios
+     axios
       .post(
-        `https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/verify?txref=${txRef}`,
+        `https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/verify?txref=${txref}`,
         {
-          txref: txRef,
+          txref: txref,
           SECKEY: envConfig.secretKey
         },
         {
@@ -86,7 +69,7 @@ indexRouter.get("/verify", async (req: any, res: any) => {
         }
       )
       .then(async response => {
-        // console.log(response.data.data);
+        console.log(response);
         if (
           response.data.data.status === "successful" &&
           response.data.data.chargecode == "00"
@@ -124,7 +107,7 @@ indexRouter.get("/verify", async (req: any, res: any) => {
 });
 
 //post routes
-indexRouter.post("/register", async (req: any, res: any) => {
+indexRouter.post("/register", formidable(), async (req: any, res: any) => {
   // console.log(req.fields);
   const data = req.fields;
   let delegate = new Delegate();
@@ -138,6 +121,7 @@ indexRouter.post("/register", async (req: any, res: any) => {
   delegate.member = data.member;
   delegate.referringChannel = data.referringChannel;
   delegate.firstConference = data.firstConference;
+  delegate.membershipCode = data.membershipCode;
   delegate.referrer = data.referrer;
   let delegateRepository = getRepository(Delegate);
   await delegateRepository.save(delegate);
@@ -163,7 +147,7 @@ indexRouter.post("/register", async (req: any, res: any) => {
 
 });
 
-indexRouter.post("/checkuser", async (req: any, res: any, next: any) => {
+indexRouter.post("/checkuser", formidable(), async (req: any, res: any, next: any) => {
   //   console.log(req.fields);
   let delegateRepository = getConnection().getRepository(Delegate);
   let singleDelegate = await delegateRepository.findOne({
