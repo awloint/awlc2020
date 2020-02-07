@@ -123,7 +123,7 @@ indexRouter.post("/register", express_formidable_1.default(), (req, res) => __aw
     try {
         const payment = new payment_1.Payment();
         yield payment
-            .start(delegate, 10, "NGN")
+            .start(delegate, 126875, "NGN")
             .then(response => {
             console.log(response.data.data.link);
             res.json(response.data.data.link);
@@ -151,7 +151,7 @@ indexRouter.post("/checkuser", express_formidable_1.default(), (req, res, next) 
             try {
                 const payment = new payment_1.Payment();
                 yield payment
-                    .start(singleDelegate, 10, "NGN")
+                    .start(singleDelegate, 126875, "NGN")
                     .then(response => {
                     console.log(response.data.data.link);
                     res.json(response.data.data.link);
