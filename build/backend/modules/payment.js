@@ -18,7 +18,7 @@ const name = (firstName, lastName) => {
 class Payment {
     start(delegate, amount, currency) {
         let txref = "AWLCSierra2020-" + Math.floor(Math.random() * 1111) + 9999;
-        if (delegate.membershipCode === "AWLCMem564") {
+        if (delegate.membershipCode === envConfig.membershipCode) {
             if (delegate.country === "Nigeria") {
                 amount = 54525;
             }
